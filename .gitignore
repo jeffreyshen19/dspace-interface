@@ -1,0 +1,10 @@
+.ipynb_checkpoints
+.DS_Store
+full_text
+full_text_processed
+dict.dict
+ldavis
+ldavis.html
+metadata.csv
+oai-pmh-harvester
+merged.csv
