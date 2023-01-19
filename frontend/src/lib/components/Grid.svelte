@@ -7,8 +7,8 @@
     import SavedItems from "./SavedItems.svelte";
     import DocumentInfo from "./DocumentInfo.svelte";
     import { onMount } from 'svelte';
+    import {savedItems} from '../store.js';
 
-	let saved = {};
     let displaySaved = false;
     let selectedDocument = null;
     let documents;
@@ -21,29 +21,18 @@
         documents = data; 
 	});
 
-    function documentClick(document){
-        selectedDocument = document;
-    }
-
-    function handleSave(document){
-        console.log("yooo", saved, document.filename in saved)
-        if(document.filename in saved) delete saved[document.filename];
-        else saved[document.filename] = document;
-
-        saved = saved;
-    }
-
 </script>
     
 <Search/>
-<BagButton bagCount={Object.keys(saved).length} handleClick={() => {displaySaved = !displaySaved}} displaySaved={displaySaved} displayDocumentInfo={selectedDocument != null}/>
-<DocumentInfo displaySaved={displaySaved} bind:selectedDocument={selectedDocument} handleSave={handleSave} saved={saved}/>
-<SavedItems displaySaved={displaySaved}/>
+<BagButton handleClick={() => {displaySaved = !displaySaved}} displaySaved={displaySaved} displayDocumentInfo={selectedDocument != null}/>
+<DocumentInfo displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
+<SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
 
 
 <div id = "grid" on:click|self={() => {selectedDocument = null;}}>
     {#if documents}
-    <Document document={documents[0]} handleClick={() => documentClick(documents[0])}/>
+    <Document document={documents[0]} handleClick={() => {selectedDocument = documents[0]}}/>
+        <Document document={documents[1]} handleClick={() => {selectedDocument = documents[1]}}/>
     {/if}
 </div>
 

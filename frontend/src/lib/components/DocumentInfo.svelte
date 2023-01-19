@@ -1,15 +1,19 @@
 <script>
     import Fa from 'svelte-fa'
     import { faXmark } from '@fortawesome/free-solid-svg-icons'
-    import { json } from '@sveltejs/kit';
+    import {savedItems} from '../store.js';
 
     export let displaySaved;
     export let selectedDocument;
-    export let handleSave;
-    export let saved;
-</script>
+    
+    function handleSave(document){
+        let temp = $savedItems;
+        if(document.filename in temp) delete temp[document.filename];
+        else temp[document.filename] = document;
 
-<!-- <div id = "saved-items" class:selected="{displaySaved}" > -->
+        savedItems.set(temp);
+    }
+</script>
 
 <div id = "document-info" class:two="{displaySaved && selectedDocument != null}" class:one="{selectedDocument != null && !displaySaved}">
     <div class = "close" on:click={() => {selectedDocument = null}}>
@@ -26,8 +30,8 @@
             <div id = "buttons">
                 <a class = "button" target = "_blank" href = "{selectedDocument.uri}">View on DSpace</a>
                 <a class = "button" target = "_blank" href = "https://dspace.mit.edu/bitstream/handle/{selectedDocument.handle}/{selectedDocument.filename.replace(".txt", "")}">Download</a>
-                <a class = "button" class:inverted="{selectedDocument.filename in saved}" on:click={() => handleSave(selectedDocument)}>
-                    {#if selectedDocument.filename in saved}
+                <a class = "button" class:inverted="{selectedDocument.filename in $savedItems}" on:click={() => handleSave(selectedDocument)}>
+                    {#if selectedDocument.filename in $savedItems}
                         Saved
                     {:else}
                         Save Document

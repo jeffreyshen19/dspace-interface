@@ -1,10 +1,18 @@
 <script>
-    import Fa from 'svelte-fa'
-    import { faBoxArchive } from '@fortawesome/free-solid-svg-icons'
-    export let bagCount = 0;
+    import Fa from 'svelte-fa';
+    import { faBoxArchive } from '@fortawesome/free-solid-svg-icons';
+    import {savedItems} from '../store.js';
+    import { onDestroy } from 'svelte';
+
+    // Get number of saved items from store
+    let bagCount = 0;
+    const unsubscribe = savedItems.subscribe((value) => bagCount = Object.keys(value).length);
+    onDestroy(unsubscribe);
+
     export let handleClick;
     export let displaySaved;
     export let displayDocumentInfo;
+    
 </script>
 
 <div id = "bag-button" on:click={handleClick} class:two="{displaySaved && displayDocumentInfo}" class:one="{(displaySaved || displayDocumentInfo) && !(displaySaved && displayDocumentInfo)}" >
