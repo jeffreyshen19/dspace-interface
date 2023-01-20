@@ -1,12 +1,13 @@
-<script>
+<script lang="ts">
     import Fa from 'svelte-fa'
     import { faXmark } from '@fortawesome/free-solid-svg-icons'
-    import {savedItems} from '../store.js';
+    import { savedItems } from '../store.js';
+    import type { Document } from '../types/Document';
 
-    export let displaySaved;
-    export let selectedDocument;
+    export let displaySaved: boolean;
+    export let selectedDocument: Document;
     
-    function removeSavedItem(filename){
+    function removeSavedItem(filename: string){
         let temp = $savedItems;
         if(filename in temp) delete temp[filename];
 
@@ -15,7 +16,7 @@
 </script>
 
 <div id = "saved-items" class:selected="{displaySaved}" >
-    <div class = "close" on:click={() => {displaySaved = null}}>
+    <div class = "close" on:click={() => {displaySaved = false}}>
         <Fa icon={faXmark} />
     </div>
 

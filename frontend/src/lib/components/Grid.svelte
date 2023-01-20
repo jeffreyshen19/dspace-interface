@@ -1,17 +1,17 @@
 
-<script>
+<script lang="ts">
+    import type { Document } from '../types/Document';
     import { supabase } from '../supabaseClient';
-    import Document from "./Document.svelte";
+    import DocumentBox from "./DocumentBox.svelte";
     import Search from "./Search.svelte";
     import BagButton from "./BagButton.svelte";
     import SavedItems from "./SavedItems.svelte";
     import DocumentInfo from "./DocumentInfo.svelte";
     import { onMount } from 'svelte';
-    import {savedItems} from '../store.js';
 
-    let displaySaved = false;
-    let selectedDocument = null;
-    let documents;
+    let displaySaved: boolean = false;
+    let selectedDocument: Document = null;
+    let documents: Document[];
 
 	onMount(async () => {
 		let {data, error} = await supabase
@@ -31,8 +31,8 @@
 
 <div id = "grid" on:click|self={() => {selectedDocument = null;}}>
     {#if documents}
-    <Document document={documents[0]} handleClick={() => {selectedDocument = documents[0]}}/>
-        <Document document={documents[1]} handleClick={() => {selectedDocument = documents[1]}}/>
+    <DocumentBox document={documents[0]} handleClick={() => {selectedDocument = documents[0]}}/>
+        <DocumentBox document={documents[1]} handleClick={() => {selectedDocument = documents[1]}}/>
     {/if}
 </div>
 

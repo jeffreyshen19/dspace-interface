@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
     import Fa from 'svelte-fa';
     import { faBoxArchive } from '@fortawesome/free-solid-svg-icons';
     import {savedItems} from '../store.js';
@@ -9,9 +9,9 @@
     const unsubscribe = savedItems.subscribe((value) => bagCount = Object.keys(value).length);
     onDestroy(unsubscribe);
 
-    export let handleClick;
-    export let displaySaved;
-    export let displayDocumentInfo;
+    export let handleClick: () => void;
+    export let displaySaved: boolean;
+    export let displayDocumentInfo: boolean;
     
 </script>
 

@@ -1,8 +1,9 @@
 
-<script>
-    export let document;
-    export let handleClick;
-    console.log(document)
+<script lang="ts">
+    import type { Document } from '../types/Document';
+
+    export let document: Document;
+    export let handleClick: () => void;
 </script>
 
 <div class = "document" on:click={handleClick}>

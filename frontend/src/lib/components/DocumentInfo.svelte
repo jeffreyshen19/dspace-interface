@@ -1,12 +1,13 @@
-<script>
+<script lang="ts">
     import Fa from 'svelte-fa'
     import { faXmark } from '@fortawesome/free-solid-svg-icons'
-    import {savedItems} from '../store.js';
+    import { savedItems } from '../store.js';
+    import type { Document } from '../types/Document';
 
-    export let displaySaved;
-    export let selectedDocument;
+    export let displaySaved: boolean;
+    export let selectedDocument: Document;
     
-    function handleSave(document){
+    function handleSave(document: Document){
         let temp = $savedItems;
         if(document.filename in temp) delete temp[document.filename];
         else temp[document.filename] = document;
