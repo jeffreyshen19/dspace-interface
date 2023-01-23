@@ -55,6 +55,7 @@
         padding: 2rem 1.5rem;
         box-sizing: border-box;
         overflow-y: scroll;
+        z-index: 100;
     } 
 
     #saved-items.selected{

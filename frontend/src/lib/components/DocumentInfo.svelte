@@ -68,11 +68,13 @@
         width: 25vw;
         height: 100vh;
         top: 0;
-        right: -20vw;
+        right: -25vw;
         transition: 0.4s all;
         padding: 2rem 1.5rem;
         box-sizing: border-box;
         overflow-y: scroll;
+        z-index: 100;
+        background: white;
     } 
 
     #document-info.one, #document-info.two{

@@ -3,10 +3,9 @@
     import type { Document } from '../types/Document';
 
     export let document: Document;
-    export let handleClick: () => void;
 </script>
 
-<div class = "document" on:click={handleClick}>
+<div class = "document">
     <h1>{document.title}</h1>
     <p class = "author">{document.author}</p>
 
@@ -24,12 +23,21 @@
 
 <style>
     .document{
-        width: 300px;
+        width: 250px;
         border: 15px solid rgba(40, 67, 135, 0.3);
         padding: 10px;
-        box-sizing: border-box;
         cursor: pointer;
         background: white;
+        left: 50%; 
+        top: 50%;
+        transform: translate(-50%, -50%); 
+        position: absolute;
+        transition: 0.2s all;
+        box-sizing: content-box;
+    }
+
+    .document:hover{
+        border-width: 18px;
     }
 
     h1{

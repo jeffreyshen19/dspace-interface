@@ -23,6 +23,7 @@
         color: #c6c5c8;
         font-size: 1rem;
         box-shadow: 0 4px 9px #A3A0A9;
+        z-index: 100;
     } 
 
     #icon{
