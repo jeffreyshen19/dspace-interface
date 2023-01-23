@@ -25,6 +25,7 @@
         <h1>{selectedDocument.title}</h1>
         <p class = "author">{selectedDocument.author}</p>
         <br>
+        {selectedDocument.tsne_0}, {selectedDocument.tsne_1}
 
         <div id = "container">
             <img src ="{selectedDocument.image_url}">

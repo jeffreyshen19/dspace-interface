@@ -10,30 +10,50 @@
     import { onMount } from 'svelte';
 
     let width; let height;
+    const tsneRatio = 0.002;
 
     let displaySaved: boolean = false;
     let selectedDocument: Document = null;
     let documents: Document[] = [];
+    const documentIds = new Set();
 
-    let boundingBox = [[0, 0], [3, 3]];
+    let boundingBox;
 
-	onMount(async () => {
-		let {data, error} = await supabase
+    async function getData(){
+        console.log(boundingBox[0][0] + ", " + boundingBox[0][1] + " | " + boundingBox[1][0] + ", " + boundingBox[1][1])
+        let {data, error} = await supabase
             .from('documents')
             .select()
             .gte("tsne_0", boundingBox[0][0]).lte("tsne_0", boundingBox[1][0])
             .gte("tsne_1", boundingBox[0][1]).lte("tsne_1", boundingBox[1][1]);
 
-        documents = data; 
+        data.forEach((data) => {
+            if(!documentIds.has(data.filename)){
+                documents.push(data);
+                documentIds.add(data.filename);
+                // console.log(data.tsne_0 + "," + data.tsne_1 + " " + data.title);
+            }
+        });
+
         
+
+        documents = documents;
+    }
+
+	onMount(async () => {
+
+        boundingBox = [[0, 0], [width * tsneRatio, height * tsneRatio]];
+
+        getData();
 	});
 
+
     function getX(document: Document){
-        return width * ((document.tsne_0 - boundingBox[0][0]) / (boundingBox[1][0] - boundingBox[0][0]));
+        return document.tsne_0 / tsneRatio;
     }
 
     function getY(document: Document){
-        return height * ((document.tsne_1 - boundingBox[0][1]) / (boundingBox[1][1] - boundingBox[0][1]));
+        return document.tsne_1 / tsneRatio;
     }
 
     // Handle panning of SVG 
@@ -116,6 +136,13 @@
 
         viewBox.x = newViewBox.x;
         viewBox.y = newViewBox.y;
+
+        boundingBox[0][0] = viewBox.x * tsneRatio;
+        boundingBox[0][1] = viewBox.y * tsneRatio;
+        boundingBox[1][0] = (width + viewBox.x) * tsneRatio;
+        boundingBox[1][1] = (height + viewBox.x) * tsneRatio;
+
+        getData();
     }
 
     function handleDocumentClick(document){
@@ -139,8 +166,8 @@
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <svg 
         on:mousedown={onPointerDown}
-        on:mouseup={onPointerUp}
-        on:mouseleave={onPointerUp}
+        on:mouseup|stopPropagation={onPointerUp}
+        on:mouseleave|stopPropagation={onPointerUp}
         on:mousemove={onPointerMove}
         on:touchstart={onPointerDown}
         on:touchend={onPointerUp}
