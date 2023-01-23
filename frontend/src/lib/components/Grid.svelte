@@ -7,7 +7,9 @@
     import BagButton from "./BagButton.svelte";
     import SavedItems from "./SavedItems.svelte";
     import DocumentInfo from "./DocumentInfo.svelte";
-    import { onMount } from 'svelte';
+    import { onMount, afterUpdate } from 'svelte';
+    import * as d3 from 'd3';
+    import {rectCollide} from "../forces.js";
 
     let width; let height;
     const tsneRatio = 0.002;
@@ -15,9 +17,12 @@
     let displaySaved: boolean = false;
     let selectedDocument: Document = null;
     let documents: Document[] = [];
+    let documentPositions = [];
     const documentIds = new Set();
 
     let boundingBox;
+    let simulation; 
+    let newPositions = [];
 
     async function getData(){
         console.log(boundingBox[0][0] + ", " + boundingBox[0][1] + " | " + boundingBox[1][0] + ", " + boundingBox[1][1])
@@ -30,23 +35,49 @@
         data.forEach((data) => {
             if(!documentIds.has(data.filename)){
                 documents.push(data);
+                newPositions.push({
+                    "filename": data.filename,
+                    "x": getX(data),
+                    "y": getY(data)
+                });
                 documentIds.add(data.filename);
-                // console.log(data.tsne_0 + "," + data.tsne_1 + " " + data.title);
             }
         });
-
-        
 
         documents = documents;
     }
 
+    afterUpdate(() => {
+        newPositions.forEach((d) => {
+            let bbox = document.querySelector(".document[data-filename='" + d.filename + "']")?.getBoundingClientRect();
+
+            d["width"] = bbox.width;
+            d["height"] = bbox.height;
+
+            documentPositions.push(d);
+        })
+
+        newPositions = [];
+    });
+
+
+
+    
 	onMount(async () => {
 
         boundingBox = [[0, 0], [width * tsneRatio, height * tsneRatio]];
 
-        getData();
-	});
+        await getData();
 
+        simulation = d3.forceSimulation(documentPositions)
+            .force("x", d3.forceX(width / 2)) 
+            .force("y", d3.forceY(height / 2))
+            // .force('collision', d3.forceCollide().radius(function(d) {
+            //     return 120;
+            // }))
+            .force('collision', rectCollide())
+            .on('tick', ticked);
+	});
 
     function getX(document: Document){
         return document.tsne_0 / tsneRatio;
@@ -54,6 +85,21 @@
 
     function getY(document: Document){
         return document.tsne_1 / tsneRatio;
+    }
+
+    // Use d3 force simulation to position items 
+    function ticked() {
+        var u = d3.select('#grid').select('svg')
+            .selectAll('foreignObject')
+            // .selectAll('circle')
+            .data(documentPositions)
+            // .join('circle')
+            // .join('foreignObject')
+            .attr('x', d => d.x)
+            .attr('y', d => d.y);
+            // .attr('r', d => d.radius)
+            // .attr('cx', d => d.x)
+            // .attr('cy', d => d.y);
     }
 
     // Handle panning of SVG 
@@ -132,6 +178,7 @@
     }
 
     function onPointerUp(event) {
+        if(!isPointerDown) return;
         isPointerDown = false;
 
         viewBox.x = newViewBox.x;

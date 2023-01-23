@@ -5,7 +5,7 @@
     export let document: Document;
 </script>
 
-<div class = "document">
+<div class = "document" data-filename="{document.filename}">
     <h1>{document.title}</h1>
     <p class = "author">{document.author}</p>
 
