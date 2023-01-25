@@ -25,12 +25,14 @@
     let newPositions = [];
 
     async function getData(){
-        console.log(boundingBox[0][0] + ", " + boundingBox[0][1] + " | " + boundingBox[1][0] + ", " + boundingBox[1][1])
+        let widthPadding = 2 * width * tsneRatio;
+        let heightPadding = 2 * height * tsneRatio
+
         let {data, error} = await supabase
             .from('documents')
             .select()
-            .gte("tsne_0", boundingBox[0][0]).lte("tsne_0", boundingBox[1][0])
-            .gte("tsne_1", boundingBox[0][1]).lte("tsne_1", boundingBox[1][1]);
+            .gte("tsne_0", boundingBox[0][0] - widthPadding).lte("tsne_0", boundingBox[1][0] + widthPadding)
+            .gte("tsne_1", boundingBox[0][1] - heightPadding).lte("tsne_1", boundingBox[1][1] + heightPadding);
 
         data.forEach((data) => {
             if(!documentIds.has(data.filename)){
@@ -57,7 +59,14 @@
             documentPositions.push(d);
         })
 
+        if(newPositions.length) {
+            simulation = d3.forceSimulation(documentPositions)
+                .force('collision', rectCollide())
+                .on('tick', ticked);
+        }
+
         newPositions = [];
+        
     });
 
 
@@ -68,15 +77,6 @@
         boundingBox = [[0, 0], [width * tsneRatio, height * tsneRatio]];
 
         await getData();
-
-        simulation = d3.forceSimulation(documentPositions)
-            .force("x", d3.forceX(width / 2)) 
-            .force("y", d3.forceY(height / 2))
-            // .force('collision', d3.forceCollide().radius(function(d) {
-            //     return 120;
-            // }))
-            .force('collision', rectCollide())
-            .on('tick', ticked);
 	});
 
     function getX(document: Document){
@@ -100,6 +100,8 @@
             // .attr('r', d => d.radius)
             // .attr('cx', d => d.x)
             // .attr('cy', d => d.y);
+
+        console.log("ticked");
     }
 
     // Handle panning of SVG 
