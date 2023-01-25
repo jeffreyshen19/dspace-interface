@@ -24,6 +24,8 @@
     let simulation; 
     let newPositions = [];
 
+    let moved = false;
+
     async function getData(){
         let widthPadding = 2 * width * tsneRatio;
         let heightPadding = 2 * height * tsneRatio
@@ -68,9 +70,6 @@
         newPositions = [];
         
     });
-
-
-
     
 	onMount(async () => {
 
@@ -100,8 +99,6 @@
             // .attr('r', d => d.radius)
             // .attr('cx', d => d.x)
             // .attr('cy', d => d.y);
-
-        console.log("ticked");
     }
 
     // Handle panning of SVG 
@@ -175,6 +172,10 @@
         newViewBox.x = viewBox.x - (pointerPosition.x - pointerOrigin.x);
         newViewBox.y = viewBox.y - (pointerPosition.y - pointerOrigin.y);
 
+        let dist = Math.pow(pointerPosition.x - pointerOrigin.x, 2) + Math.pow(pointerPosition.y - pointerOrigin.y, 2);
+
+        if(dist > 10) moved = true;
+
         let viewBoxString = `${newViewBox.x} ${newViewBox.y} ${width} ${height}`;
         document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
     }
@@ -195,7 +196,8 @@
     }
 
     function handleDocumentClick(document){
-        selectedDocument = document;
+        if(!moved) selectedDocument = (selectedDocument == document) ? null : document;
+        moved = false;
     }
 
 </script>
@@ -221,7 +223,7 @@
         on:touchstart={onPointerDown}
         on:touchend={onPointerUp}
         on:touchmove={onPointerMove}
-        on:click|self={() => {selectedDocument = null;}}
+        on:click|self={() => {moved = false; selectedDocument = null;}}
     >
         {#each documents as document}
             <foreignObject on:click={() => handleDocumentClick(document)} x="{getX(document)}" y="{getY(document)}" width="1" height="1">
