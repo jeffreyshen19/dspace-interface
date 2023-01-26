@@ -45,6 +45,7 @@
     h1{
         font-size: 1.2em;
         margin: 0;
+        word-break: break-word;
     }
 
     p{

@@ -19,6 +19,7 @@
     let displaySaved: boolean = false;
     let selectedDocument: Document = null;
     let documents: Document[] = [];
+    let documentIds = {}
     let documentPositions = [];
 
     let boundingBox;
@@ -45,27 +46,46 @@
     let moved = false;
 
     async function getData(){
-        let widthPadding = 2 * width * tsneRatio;
-        let heightPadding = 2 * height * tsneRatio
+        let widthPadding = 1 * width * tsneRatio;
+        let heightPadding = 1 * height * tsneRatio;
 
         loading = true;
+        loadedBox = [[boundingBox[0][0] - widthPadding, boundingBox[0][1] - heightPadding], [ boundingBox[1][0] + widthPadding, boundingBox[1][1] + heightPadding]];
 
         let {data, error} = await supabase
             .from('documents')
             .select()
-            .gte("tsne_0", boundingBox[0][0] - widthPadding).lte("tsne_0", boundingBox[1][0] + widthPadding)
-            .gte("tsne_1", boundingBox[0][1] - heightPadding).lte("tsne_1", boundingBox[1][1] + heightPadding);
+            .gte("tsne_0", loadedBox[0][0]).lte("tsne_0", loadedBox[1][0])
+            .gte("tsne_1", loadedBox[0][1]).lte("tsne_1", loadedBox[1][1]);
 
-        loadedBox = [[boundingBox[0][0] - widthPadding, boundingBox[0][1] - heightPadding], [ boundingBox[1][0] + widthPadding, boundingBox[1][1] + heightPadding]];
 
         documents = data;
+        let newDocumentIds = {};
         newPositions = data.map((data) => {
-            return {
-                "filename": data.filename,
-                "x": getX(data),
-                "y": getY(data)
+            let position; 
+            
+            // If the document existed previously, fix the x, y so it doesn't move
+            if(data.filename in documentIds) {
+                position = {
+                    "filename": data.filename,
+                    "fx": documentIds[data.filename].x,
+                    "fy": documentIds[data.filename].y
+                }
             }
+            else {
+                position = {
+                    "filename": data.filename,
+                    "x": getX(data),
+                    "y": getY(data)
+                }
+            }
+
+            newDocumentIds[data.filename] = position;
+
+            return position;
         });
+
+        documentIds = newDocumentIds; 
     }
 
     afterUpdate(() => {
@@ -226,7 +246,7 @@
         window.history.replaceState(null, "", url.toString())
 
         // Reload data, if necessary 
-        if(boundingBox[0][0] < loadedBox[0][0] || boundingBox[0][1] < loadedBox[0][1] || boundingBox[1][0] > loadedBox[1][0] || boundingBox[1][1] > loadedBox[1][1]){
+        if(boundingBox[0][0] < loadedBox[0][0] + 300 * tsneRatio || boundingBox[0][1] < loadedBox[0][1] + 300 * tsneRatio || boundingBox[1][0] > loadedBox[1][0] - 300 * tsneRatio || boundingBox[1][1] > loadedBox[1][1] - 300 * tsneRatio){
             console.log("need to reload");
             getData();
         }

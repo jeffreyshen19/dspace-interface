@@ -24,6 +24,8 @@
     </div>
 
     {#if selectedDocument}
+        {selectedDocument.tsne_0}, {selectedDocument.tsne_1}
+
         <h1>{selectedDocument.title}</h1>
         <p class = "author">{selectedDocument.author}</p>
         <br>
