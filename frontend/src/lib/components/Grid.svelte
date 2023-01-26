@@ -10,6 +10,8 @@
     import { onMount, afterUpdate } from 'svelte';
     import * as d3 from 'd3';
     import {rectCollide} from "../forces.js";
+    import Fa from 'svelte-fa';
+    import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
     let width; let height;
     const tsneRatio = 0.002;
@@ -20,6 +22,7 @@
     let documentPositions = [];
 
     let boundingBox;
+    let loading;
     let loadedBox; 
     let simulation; 
     let newPositions = [];
@@ -44,6 +47,8 @@
     async function getData(){
         let widthPadding = 2 * width * tsneRatio;
         let heightPadding = 2 * height * tsneRatio
+
+        loading = true;
 
         let {data, error} = await supabase
             .from('documents')
@@ -74,9 +79,8 @@
         })
 
         if(newPositions.length) {
-            simulation = d3.forceSimulation(documentPositions)
-                .force('collision', rectCollide())
-                .on('tick', ticked);
+            simulation.nodes(documentPositions);
+            runSimulation();
         }
 
         newPositions = [];
@@ -106,6 +110,12 @@
         
         boundingBox = [[0, 0], [width * tsneRatio, height * tsneRatio]];
 
+        simulation = d3.forceSimulation([])
+            .force('collision', rectCollide())
+            .stop();
+
+        runSimulation();
+
         await getData();
 	});
 
@@ -118,12 +128,16 @@
     }
 
     // Use d3 force simulation to position items 
-    function ticked() {
+    function runSimulation() {
+        for (var i = 0; i < 300; ++i) simulation.tick();
+
         var u = d3.select('#grid').select('svg')
             .selectAll('foreignObject')
             .data(documentPositions)
             .attr('x', d => d.x)
             .attr('y', d => d.y);
+
+        loading = false;
     }
 
     // Handle panning of SVG 
@@ -237,6 +251,14 @@
     on:keydown={onKeyDown}
 />
 
+{#if loading}
+    <div id = "overlay"></div>
+
+    <span id = "loading">
+        <Fa icon={faCircleNotch} size="3x" spin />
+    </span>
+{/if}
+
 <div id = "grid" >
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <svg 
@@ -264,6 +286,25 @@
         width: 100vw;
         height: 100vh;
         user-select: none; 
+    }
+
+    #overlay{
+        z-index: 99;
+        width: 100vw;
+        height: 100vh;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background-color: rgba(181, 181, 181, 0.3);
+        backdrop-filter: blur(1px);
+    }
+
+    #loading{
+        position: absolute;
+        z-index: 102;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 
     svg{
