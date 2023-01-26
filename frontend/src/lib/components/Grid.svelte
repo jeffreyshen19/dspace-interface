@@ -18,11 +18,26 @@
     let selectedDocument: Document = null;
     let documents: Document[] = [];
     let documentPositions = [];
-    const documentIds = new Set();
 
     let boundingBox;
+    let loadedBox; 
     let simulation; 
     let newPositions = [];
+
+    let isPointerDown: boolean = false;
+    let pointerOrigin = {
+        x: 0, 
+        y: 0
+    };
+    let viewBox = {
+        x: 0,
+        y: 0
+    };
+
+    let newViewBox = {
+        x: 0,
+        y: 0
+    };
 
     let moved = false;
 
@@ -36,29 +51,26 @@
             .gte("tsne_0", boundingBox[0][0] - widthPadding).lte("tsne_0", boundingBox[1][0] + widthPadding)
             .gte("tsne_1", boundingBox[0][1] - heightPadding).lte("tsne_1", boundingBox[1][1] + heightPadding);
 
-        data.forEach((data) => {
-            if(!documentIds.has(data.filename)){
-                documents.push(data);
-                newPositions.push({
-                    "filename": data.filename,
-                    "x": getX(data),
-                    "y": getY(data)
-                });
-                documentIds.add(data.filename);
+        loadedBox = [[boundingBox[0][0] - widthPadding, boundingBox[0][1] - heightPadding], [ boundingBox[1][0] + widthPadding, boundingBox[1][1] + heightPadding]];
+
+        documents = data;
+        newPositions = data.map((data) => {
+            return {
+                "filename": data.filename,
+                "x": getX(data),
+                "y": getY(data)
             }
         });
-
-        documents = documents;
     }
 
     afterUpdate(() => {
-        newPositions.forEach((d) => {
+        documentPositions = newPositions.map((d) => {
             let bbox = document.querySelector(".document[data-filename='" + d.filename + "']")?.getBoundingClientRect();
 
             d["width"] = bbox.width;
             d["height"] = bbox.height;
 
-            documentPositions.push(d);
+            return d;
         })
 
         if(newPositions.length) {
@@ -72,7 +84,26 @@
     });
     
 	onMount(async () => {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
 
+        let x = parseFloat(urlParams.get("x"));
+        let y = parseFloat(urlParams.get("y"));
+        // if(!isNaN(x) && !isNaN(y)){
+        //     boundingBox = [[x, y], [x + width * tsneRatio, y + height * tsneRatio]];
+
+        //     pointerOrigin.x = x;
+        //     pointerOrigin.y = y;
+        //     viewBox.x = x;
+        //     viewBox.y = y;
+        //     newViewBox.x = x;
+        //     newViewBox.y = y;
+
+        //     let viewBoxString = `${newViewBox.x} ${newViewBox.y} ${width} ${height}`;
+        //     document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
+        // }
+        // else
+        
         boundingBox = [[0, 0], [width * tsneRatio, height * tsneRatio]];
 
         await getData();
@@ -90,32 +121,12 @@
     function ticked() {
         var u = d3.select('#grid').select('svg')
             .selectAll('foreignObject')
-            // .selectAll('circle')
             .data(documentPositions)
-            // .join('circle')
-            // .join('foreignObject')
             .attr('x', d => d.x)
             .attr('y', d => d.y);
-            // .attr('r', d => d.radius)
-            // .attr('cx', d => d.x)
-            // .attr('cy', d => d.y);
     }
 
     // Handle panning of SVG 
-    let isPointerDown: boolean = false;
-    let pointerOrigin = {
-        x: 0, 
-        y: 0
-    };
-    let viewBox = {
-        x: 0,
-        y: 0
-    };
-
-    let newViewBox = {
-        x: 0,
-        y: 0
-    };
 
     function getPointFromEvent (event) {
         var point = {x: 0, y: 0};
@@ -184,15 +195,28 @@
         if(!isPointerDown) return;
         isPointerDown = false;
 
+        // Update viewbox
         viewBox.x = newViewBox.x;
         viewBox.y = newViewBox.y;
 
         boundingBox[0][0] = viewBox.x * tsneRatio;
         boundingBox[0][1] = viewBox.y * tsneRatio;
         boundingBox[1][0] = (width + viewBox.x) * tsneRatio;
-        boundingBox[1][1] = (height + viewBox.x) * tsneRatio;
+        boundingBox[1][1] = (height + viewBox.y) * tsneRatio;
 
-        getData();
+        // Update URL params 
+
+        var url = new URL(window.location.href);
+        url.searchParams.set('x', boundingBox[0][0]);
+        url.searchParams.set('y', boundingBox[0][1]);
+        window.history.replaceState(null, "", url.toString())
+
+        // Reload data, if necessary 
+        if(boundingBox[0][0] < loadedBox[0][0] || boundingBox[0][1] < loadedBox[0][1] || boundingBox[1][0] > loadedBox[1][0] || boundingBox[1][1] > loadedBox[1][1]){
+            console.log("need to reload");
+            getData();
+        }
+        
     }
 
     function handleDocumentClick(document){
