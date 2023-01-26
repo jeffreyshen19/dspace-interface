@@ -1,11 +1,13 @@
 
 <script lang="ts">
     import type { Document } from '../types/Document';
+    import {getDocumentColor} from "../colors.js";
 
     export let document: Document;
 </script>
 
-<div class = "document" data-filename="{document.filename}">
+<div class = "document" data-filename="{document.filename}" 
+    style:border-color="{getDocumentColor(document, 0.3)}">
     <h1>{document.title}</h1>
     <p class = "author">{document.author}</p>
 
@@ -24,7 +26,7 @@
 <style>
     .document{
         width: 250px;
-        border: 15px solid rgba(40, 67, 135, 0.3);
+        border: 15px solid;
         padding: 10px;
         cursor: pointer;
         background: white;

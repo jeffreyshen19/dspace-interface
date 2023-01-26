@@ -2,7 +2,9 @@
     import Fa from 'svelte-fa'
     import { faXmark } from '@fortawesome/free-solid-svg-icons'
     import { savedItems } from '../store.js';
+    import { getDocumentColor } from '../colors.js';
     import type { Document } from '../types/Document';
+    import { onMount } from 'svelte';
 
     export let displaySaved: boolean;
     export let selectedDocument: Document;
@@ -25,7 +27,6 @@
         <h1>{selectedDocument.title}</h1>
         <p class = "author">{selectedDocument.author}</p>
         <br>
-        {selectedDocument.tsne_0}, {selectedDocument.tsne_1}
 
         <div id = "container">
             <img src ="{selectedDocument.image_url}">

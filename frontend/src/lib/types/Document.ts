@@ -13,4 +13,5 @@ export interface Document {
     image_url: string, 
     handle: string,
     identifier: string,
+    main_topic: number
 }
