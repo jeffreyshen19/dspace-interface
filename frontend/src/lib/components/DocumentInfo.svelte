@@ -16,6 +16,10 @@
 
         savedItems.set(temp);
     }
+
+    function getPDFUrl(document: Document){
+        return "https://dspace.mit.edu/bitstream/handle/" + document.handle + "/" + document.filename.replace(".txt", "");
+    }
 </script>
 
 <div id = "document-info" class:two="{displaySaved && selectedDocument != null}" class:one="{selectedDocument != null && !displaySaved}">
@@ -31,10 +35,10 @@
         <br>
 
         <div id = "container">
-            <img src ="{selectedDocument.image_url}">
+            <div class = "img"><a href = "{getPDFUrl(selectedDocument)}" target = "_blank"><img src ="{selectedDocument.image_url}"></a></div>
             <div id = "buttons">
                 <a class = "button" target = "_blank" href = "{selectedDocument.uri}">View on DSpace</a>
-                <a class = "button" target = "_blank" href = "https://dspace.mit.edu/bitstream/handle/{selectedDocument.handle}/{selectedDocument.filename.replace(".txt", "")}">Download</a>
+                <a class = "button" target = "_blank" href = "{getPDFUrl(selectedDocument)}">Download</a>
                 <a class = "button" class:inverted="{selectedDocument.filename in $savedItems}" on:click={() => handleSave(selectedDocument)}>
                     {#if selectedDocument.filename in $savedItems}
                         Saved
@@ -115,9 +119,13 @@
         gap: 10px;
     }
 
-    img{
+    .img{
         flex-grow: 1;
         min-width: 70px;
+    }
+
+    img{
+        width: 100%;
     }
 
     #buttons{
