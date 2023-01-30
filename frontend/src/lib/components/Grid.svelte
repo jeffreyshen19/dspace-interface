@@ -9,7 +9,7 @@
     import DocumentInfo from "./DocumentInfo.svelte";
     import { onMount, afterUpdate } from 'svelte';
     import Fa from 'svelte-fa';
-    import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
+    import { faCircleNotch, faY } from '@fortawesome/free-solid-svg-icons';
 
     let width; let height;
     let selectedDocument: Document = null;
@@ -51,14 +51,9 @@
         window.history.replaceState(null, "", url.toString())
     }
 
-	onMount(async () => {
-        const queryString = window.location.search;
-        const urlParams = new URLSearchParams(queryString);
+    function transportTo(x: number, y: number){
+        boundingBox = [[x - width / 2, y - height / 2], [x + width / 2, y + height / 2]];
 
-        let centerX = parseFloat(urlParams.get("x")) || 0;
-        let centerY = parseFloat(urlParams.get("y")) || 0;
-        
-        boundingBox = [[centerX - width / 2, centerY - height / 2], [centerX + width / 2, centerY + height / 2]];
         let viewBoxString = `${boundingBox[0][0]} ${boundingBox[0][1]} ${width} ${height}`;
         document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
 
@@ -76,7 +71,30 @@
         };
 
         setURLParams();
+    }
+
+    function onResize(){
+        let centerX = boundingBox[0][0] + (boundingBox[1][0] - boundingBox[0][0]) / 2;
+        let centerY = boundingBox[0][1] + (boundingBox[1][1] - boundingBox[0][1]) / 2;
+        transportTo(centerX, centerY);
+    }
+
+	onMount(async () => {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        let centerX = parseFloat(urlParams.get("x")) || 0;
+        let centerY = parseFloat(urlParams.get("y")) || 0;
+        
+        transportTo(centerX, centerY);
+        
         await getData();
+
+        window.addEventListener('resize', onResize);
+		
+		return () => {
+			window.removeEventListener('resize', onResize);
+		}
 	});
 
     // Handle panning of SVG 
