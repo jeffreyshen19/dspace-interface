@@ -20,6 +20,8 @@
 
 <script>
 	import Grid from '../lib/components/Grid.svelte';
+    import GridGenerator from '../lib/components/GridGenerator.svelte';
 </script>
 
 <Grid/>
+<!-- <GridGenerator/> -->

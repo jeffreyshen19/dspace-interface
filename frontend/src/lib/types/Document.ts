@@ -13,5 +13,7 @@ export interface Document {
     image_url: string, 
     handle: string,
     identifier: string,
-    main_topic: number
+    main_topic: number,
+    x: number,
+    y: number
 }

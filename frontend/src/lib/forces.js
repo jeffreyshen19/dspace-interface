@@ -21,6 +21,11 @@ export function rectCollide() {
                         lx,
                         ly;
 
+                    if(xSpacing == null || ySpacing == null) {
+                        console.log(d);
+                        console.log(q.data);
+                    }
+
                     if (absX < xSpacing && absY < ySpacing) {
                         l = Math.sqrt(x * x + y * y);
 

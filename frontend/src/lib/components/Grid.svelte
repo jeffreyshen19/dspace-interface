@@ -8,25 +8,16 @@
     import SavedItems from "./SavedItems.svelte";
     import DocumentInfo from "./DocumentInfo.svelte";
     import { onMount, afterUpdate } from 'svelte';
-    import * as d3 from 'd3';
-    import {rectCollide} from "../forces.js";
     import Fa from 'svelte-fa';
     import { faCircleNotch } from '@fortawesome/free-solid-svg-icons';
 
     let width; let height;
-    const tsneRatio = 0.002;
-
-    let displaySaved: boolean = false;
     let selectedDocument: Document = null;
     let documents: Document[] = [];
-    let documentIds = {}
-    let documentPositions = [];
 
     let boundingBox;
     let loading;
     let loadedBox; 
-    let simulation; 
-    let newPositions = [];
 
     let isPointerDown: boolean = false;
     let pointerOrigin = {
@@ -46,8 +37,8 @@
     let moved = false;
 
     async function getData(){
-        let widthPadding = 1 * width * tsneRatio;
-        let heightPadding = 1 * height * tsneRatio;
+        let widthPadding = 1 * width;
+        let heightPadding = 1 * height;
 
         loading = true;
         loadedBox = [[boundingBox[0][0] - widthPadding, boundingBox[0][1] - heightPadding], [ boundingBox[1][0] + widthPadding, boundingBox[1][1] + heightPadding]];
@@ -55,58 +46,13 @@
         let {data, error} = await supabase
             .from('documents')
             .select()
-            .gte("tsne_0", loadedBox[0][0]).lte("tsne_0", loadedBox[1][0])
-            .gte("tsne_1", loadedBox[0][1]).lte("tsne_1", loadedBox[1][1]);
-
+            .gte("x", loadedBox[0][0]).lte("x", loadedBox[1][0])
+            .gte("y", loadedBox[0][1]).lte("y", loadedBox[1][1]);
 
         documents = data;
-        let newDocumentIds = {};
-        newPositions = data.map((data) => {
-            let position; 
-            
-            // If the document existed previously, fix the x, y so it doesn't move
-            if(data.filename in documentIds) {
-                position = {
-                    "filename": data.filename,
-                    "fx": documentIds[data.filename].x,
-                    "fy": documentIds[data.filename].y
-                }
-            }
-            else {
-                position = {
-                    "filename": data.filename,
-                    "x": getX(data),
-                    "y": getY(data)
-                }
-            }
-
-            newDocumentIds[data.filename] = position;
-
-            return position;
-        });
-
-        documentIds = newDocumentIds; 
+        loading = false;
     }
 
-    afterUpdate(() => {
-        documentPositions = newPositions.map((d) => {
-            let bbox = document.querySelector(".document[data-filename='" + d.filename + "']")?.getBoundingClientRect();
-
-            d["width"] = bbox.width;
-            d["height"] = bbox.height;
-
-            return d;
-        })
-
-        if(newPositions.length) {
-            simulation.nodes(documentPositions);
-            runSimulation();
-        }
-
-        newPositions = [];
-        
-    });
-    
 	onMount(async () => {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
@@ -128,37 +74,17 @@
         // }
         // else
         
-        boundingBox = [[0, 0], [width * tsneRatio, height * tsneRatio]];
+        boundingBox = [[0, 0], [width, height]];
 
-        simulation = d3.forceSimulation([])
-            .force('collision', rectCollide())
-            .stop();
+        // simulation = d3.forceSimulation([])
+        //     .force('collision', rectCollide())
+        //     .stop();
 
-        runSimulation();
+        // runSimulation();
+    
 
         await getData();
 	});
-
-    function getX(document: Document){
-        return document.tsne_0 / tsneRatio;
-    }
-
-    function getY(document: Document){
-        return document.tsne_1 / tsneRatio;
-    }
-
-    // Use d3 force simulation to position items 
-    function runSimulation() {
-        for (var i = 0; i < 300; ++i) simulation.tick();
-
-        var u = d3.select('#grid').select('svg')
-            .selectAll('foreignObject')
-            .data(documentPositions)
-            .attr('x', d => d.x)
-            .attr('y', d => d.y);
-
-        loading = false;
-    }
 
     // Handle panning of SVG 
 
@@ -233,10 +159,10 @@
         viewBox.x = newViewBox.x;
         viewBox.y = newViewBox.y;
 
-        boundingBox[0][0] = viewBox.x * tsneRatio;
-        boundingBox[0][1] = viewBox.y * tsneRatio;
-        boundingBox[1][0] = (width + viewBox.x) * tsneRatio;
-        boundingBox[1][1] = (height + viewBox.y) * tsneRatio;
+        boundingBox[0][0] = viewBox.x;
+        boundingBox[0][1] = viewBox.y;
+        boundingBox[1][0] = (width + viewBox.x);
+        boundingBox[1][1] = (height + viewBox.y);
 
         // Update URL params 
 
@@ -246,7 +172,7 @@
         window.history.replaceState(null, "", url.toString())
 
         // Reload data, if necessary 
-        if(boundingBox[0][0] < loadedBox[0][0] + 300 * tsneRatio || boundingBox[0][1] < loadedBox[0][1] + 300 * tsneRatio || boundingBox[1][0] > loadedBox[1][0] - 300 * tsneRatio || boundingBox[1][1] > loadedBox[1][1] - 300 * tsneRatio){
+        if(boundingBox[0][0] < loadedBox[0][0] + 300 || boundingBox[0][1] < loadedBox[0][1] + 300 || boundingBox[1][0] > loadedBox[1][0] - 300 || boundingBox[1][1] > loadedBox[1][1] - 300){
             console.log("need to reload");
             getData();
         }
@@ -260,10 +186,10 @@
 
 </script>
     
-<Search/>
+<!-- <Search/>
 <BagButton handleClick={() => {displaySaved = !displaySaved}} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DocumentInfo {displaySaved} bind:selectedDocument={selectedDocument}/>
-<SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
+<SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/> -->
 
 <svelte:window 
     bind:innerWidth={width} 
@@ -292,7 +218,7 @@
         on:click|self={() => {moved = false; selectedDocument = null;}}
     >
         {#each documents as document}
-            <foreignObject on:click={() => handleDocumentClick(document)} x="{getX(document)}" y="{getY(document)}" width="1" height="1">
+            <foreignObject on:click={() => handleDocumentClick(document)} x="{document.x}" y="{document.y}" width="1" height="1">
                 <DocumentBox {document}/>
             </foreignObject>
         {/each}
