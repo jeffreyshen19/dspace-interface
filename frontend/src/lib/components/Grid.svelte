@@ -4,6 +4,7 @@
     import { supabase } from '../supabaseClient';
     import DocumentBox from "./DocumentBox.svelte";
     import Search from "./Search.svelte";
+    import Minimap from './Minimap.svelte';
     import BagButton from "./BagButton.svelte";
     import SavedItems from "./SavedItems.svelte";
     import DocumentInfo from "./DocumentInfo.svelte";
@@ -28,8 +29,8 @@
     let moved = false;
 
     async function getData(){
-        let widthPadding = 1 * width;
-        let heightPadding = 1 * height;
+        let widthPadding = 2 * width;
+        let heightPadding = 2 * height;
 
         loading = true;
         loadedBox = [[boundingBox[0][0] - widthPadding, boundingBox[0][1] - heightPadding], [ boundingBox[1][0] + widthPadding, boundingBox[1][1] + heightPadding]];
@@ -89,8 +90,6 @@
         let centerY = parseFloat(urlParams.get("y")) || 0;
         
         transportTo(centerX, centerY);
-        
-        await getData();
 
         window.addEventListener('resize', onResize);
 		
@@ -201,6 +200,7 @@
 <BagButton handleClick={() => {displaySaved = !displaySaved}} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DocumentInfo {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
+<Minimap {boundingBox}/>
 
 <svelte:window 
     bind:innerWidth={width} 
