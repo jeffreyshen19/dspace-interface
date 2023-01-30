@@ -14,25 +14,16 @@
     let width; let height;
     let selectedDocument: Document = null;
     let documents: Document[] = [];
+    let displaySaved = false;
 
     let boundingBox;
     let loading;
     let loadedBox; 
 
     let isPointerDown: boolean = false;
-    let pointerOrigin = {
-        x: 0, 
-        y: 0
-    };
-    let viewBox = {
-        x: 0,
-        y: 0
-    };
-
-    let newViewBox = {
-        x: 0,
-        y: 0
-    };
+    let pointerOrigin;
+    let viewBox;
+    let newViewBox;
 
     let moved = false;
 
@@ -53,36 +44,38 @@
         loading = false;
     }
 
+    function setURLParams(){
+        var url = new URL(window.location.href);
+        url.searchParams.set('x', boundingBox[0][0] + (boundingBox[1][0] - boundingBox[0][0]) / 2);
+        url.searchParams.set('y', boundingBox[0][1] + (boundingBox[1][1] - boundingBox[0][1]) / 2);
+        window.history.replaceState(null, "", url.toString())
+    }
+
 	onMount(async () => {
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
-        let x = parseFloat(urlParams.get("x"));
-        let y = parseFloat(urlParams.get("y"));
-        // if(!isNaN(x) && !isNaN(y)){
-        //     boundingBox = [[x, y], [x + width * tsneRatio, y + height * tsneRatio]];
-
-        //     pointerOrigin.x = x;
-        //     pointerOrigin.y = y;
-        //     viewBox.x = x;
-        //     viewBox.y = y;
-        //     newViewBox.x = x;
-        //     newViewBox.y = y;
-
-        //     let viewBoxString = `${newViewBox.x} ${newViewBox.y} ${width} ${height}`;
-        //     document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
-        // }
-        // else
+        let centerX = parseFloat(urlParams.get("x")) || 0;
+        let centerY = parseFloat(urlParams.get("y")) || 0;
         
-        boundingBox = [[0, 0], [width, height]];
+        boundingBox = [[centerX - width / 2, centerY - height / 2], [centerX + width / 2, centerY + height / 2]];
+        let viewBoxString = `${boundingBox[0][0]} ${boundingBox[0][1]} ${width} ${height}`;
+        document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
 
-        // simulation = d3.forceSimulation([])
-        //     .force('collision', rectCollide())
-        //     .stop();
+        pointerOrigin = {
+            x: boundingBox[0][0], 
+            y: boundingBox[0][1]
+        };
+        viewBox = {
+            x: boundingBox[0][0],
+            y: boundingBox[0][1]
+        };
+        newViewBox = {
+            x: boundingBox[0][0],
+            y: boundingBox[0][1]
+        };
 
-        // runSimulation();
-    
-
+        setURLParams();
         await getData();
 	});
 
@@ -165,11 +158,7 @@
         boundingBox[1][1] = (height + viewBox.y);
 
         // Update URL params 
-
-        var url = new URL(window.location.href);
-        url.searchParams.set('x', boundingBox[0][0]);
-        url.searchParams.set('y', boundingBox[0][1]);
-        window.history.replaceState(null, "", url.toString())
+        setURLParams();
 
         // Reload data, if necessary 
         if(boundingBox[0][0] < loadedBox[0][0] + 300 || boundingBox[0][1] < loadedBox[0][1] + 300 || boundingBox[1][0] > loadedBox[1][0] - 300 || boundingBox[1][1] > loadedBox[1][1] - 300){
@@ -186,10 +175,10 @@
 
 </script>
     
-<!-- <Search/>
+<Search/>
 <BagButton handleClick={() => {displaySaved = !displaySaved}} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DocumentInfo {displaySaved} bind:selectedDocument={selectedDocument}/>
-<SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/> -->
+<SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
 
 <svelte:window 
     bind:innerWidth={width} 

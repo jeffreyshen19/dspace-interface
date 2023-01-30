@@ -7,7 +7,7 @@
 </script>
 
 <div class = "document" data-filename="{document.filename}" 
-    style:border-color="{getDocumentColor(document, 0.3)}">
+    style:border-color="{getDocumentColor(document, 0.4)}">
     <h1>{document.title}</h1>
     <p class = "author">{document.author}</p>
 
