@@ -70,6 +70,8 @@
             y: boundingBox[0][1]
         };
 
+        if(!loadedBox || needToReload()) getData();
+
         setURLParams();
     }
 
@@ -162,6 +164,10 @@
         document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
     }
 
+    function needToReload(){
+        return boundingBox[0][0] < loadedBox[0][0] + 300 || boundingBox[0][1] < loadedBox[0][1] + 300 || boundingBox[1][0] > loadedBox[1][0] - 300 || boundingBox[1][1] > loadedBox[1][1] - 300;
+    }
+
     function onPointerUp(event) {
         if(!isPointerDown) return;
         isPointerDown = false;
@@ -179,10 +185,8 @@
         setURLParams();
 
         // Reload data, if necessary 
-        if(boundingBox[0][0] < loadedBox[0][0] + 300 || boundingBox[0][1] < loadedBox[0][1] + 300 || boundingBox[1][0] > loadedBox[1][0] - 300 || boundingBox[1][1] > loadedBox[1][1] - 300){
-            console.log("need to reload");
-            getData();
-        }
+        if(needToReload()) getData();
+        
         
     }
 
@@ -195,7 +199,7 @@
     
 <Search/>
 <BagButton handleClick={() => {displaySaved = !displaySaved}} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
-<DocumentInfo {displaySaved} bind:selectedDocument={selectedDocument}/>
+<DocumentInfo {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
 
 <svelte:window 
@@ -222,7 +226,7 @@
         on:touchstart={onPointerDown}
         on:touchend={onPointerUp}
         on:touchmove={onPointerMove}
-        on:click|self={() => {moved = false; selectedDocument = null;}}
+        on:click|self={() => {if(!moved) selectedDocument = null; moved = false; }}
     >
         {#each documents as document}
             <foreignObject on:click={() => handleDocumentClick(document)} x="{document.x}" y="{document.y}" width="1" height="1">

@@ -2,12 +2,11 @@
     import Fa from 'svelte-fa'
     import { faXmark } from '@fortawesome/free-solid-svg-icons'
     import { savedItems } from '../store.js';
-    import { getDocumentColor } from '../colors.js';
     import type { Document } from '../types/Document';
-    import { onMount } from 'svelte';
 
     export let displaySaved: boolean;
     export let selectedDocument: Document;
+    export let transportTo: (x:number, y:number) => void;
     
     function handleSave(document: Document){
         let temp = $savedItems;
@@ -28,8 +27,6 @@
     </div>
 
     {#if selectedDocument}
-        {selectedDocument.tsne_0}, {selectedDocument.tsne_1}
-
         <h1>{selectedDocument.title}</h1>
         <p class = "author">{selectedDocument.author}</p>
         <br>
@@ -37,7 +34,7 @@
         <div id = "container">
             <div class = "img"><a href = "{getPDFUrl(selectedDocument)}" target = "_blank"><img src ="{selectedDocument.image_url}"></a></div>
             <div id = "buttons">
-                <a class = "button" target = "_blank" href = "{selectedDocument.uri}">View on DSpace</a>
+                <a class = "button" target = "_blank" on:click={() => transportTo(selectedDocument.x, selectedDocument.y)}>View on Map</a>
                 <a class = "button" target = "_blank" href = "{getPDFUrl(selectedDocument)}">Download</a>
                 <a class = "button" class:inverted="{selectedDocument.filename in $savedItems}" on:click={() => handleSave(selectedDocument)}>
                     {#if selectedDocument.filename in $savedItems}
@@ -51,6 +48,9 @@
             </div>   
             
         </div>
+
+        <br><strong>URL</strong><br>
+        <p><a href = "{selectedDocument.uri}">{selectedDocument.uri.replace("https://", "").replace("http://", "")}</a></p>
 
         {#if selectedDocument.subject}
             <br><strong>Subject</strong><br>
@@ -139,6 +139,10 @@
 
     p{
         margin: 0;
+    }
+
+    a{
+        color: rgba(40, 67, 135, 0.8);
     }
 
     .button{ 
