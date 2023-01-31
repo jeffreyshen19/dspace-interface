@@ -125,19 +125,15 @@
         const speed = 20;
 
         switch(event.key.toLowerCase()){
-            case "a":
             case "arrowleft": 
                 viewBox.x -= speed;
                 break;
-            case "d":
             case "arrowright": 
                 viewBox.x += speed;
                 break;
-            case "w":
             case "arrowup": 
                 viewBox.y -= speed;
                 break;
-            case "s":
             case "arrowdown": 
                 viewBox.y += speed;
                 break;

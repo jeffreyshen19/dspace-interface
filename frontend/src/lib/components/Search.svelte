@@ -1,12 +1,34 @@
 <script>
-    import Fa from 'svelte-fa'
-    import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons'
+    import Fa from 'svelte-fa';
+    import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+    import { supabase } from '../supabaseClient';
+
     let query = ""; 
+    let placeholder = "";
+
+    async function getRandomTitle(){
+        const {data, error} = await supabase.rpc('get_random_title');
+        placeholder = data;
+    }
+
+    async function search(){
+        console.log(query)
+        // const {data, error} = await supabase.rpc('search', { keyword: query })
+
+        // console.log(data);
+        // console.log(error);
+    }
+
+    getRandomTitle();
+
+    // search("nuclear");
 </script>
 
 <div id = "search">
-    <Fa id = "icon" icon={faMagnifyingGlass} />
-    <input value={query} placeholder="Widespread occurrence of hybrid internal-terminal widespread occurence hybrid terminal">
+    <form on:submit|preventDefault={search}>
+        <Fa id = "icon" icon={faMagnifyingGlass} />
+        <input bind:value={query} {placeholder}>
+    </form>
 </div>
 
 <style>
