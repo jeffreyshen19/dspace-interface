@@ -3,6 +3,7 @@
     import type { Document } from '../types/Document';
     import { supabase } from '../supabaseClient';
     import DocumentBox from "./DocumentBox.svelte";
+    import ZoomControl from './ZoomControl.svelte';
     import Search from "./Search.svelte";
     import Minimap from './Minimap.svelte';
     import BagButton from "./BagButton.svelte";
@@ -79,14 +80,9 @@
         };
 
         zoom = z || 1;
-        console.log(zoom);
         scale();
 
-        let viewBoxString = `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`;
-        console.log(viewBoxString)
-        document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
-
-
+        setViewBoxString();
         if(!loadedBox || needToReload()) getData();
 
         setURLParams();
@@ -95,7 +91,7 @@
     function onResize(){
         let centerX = boundingBox[0][0] + (boundingBox[1][0] - boundingBox[0][0]) / 2;
         let centerY = boundingBox[0][1] + (boundingBox[1][1] - boundingBox[0][1]) / 2;
-        transportTo(centerX, centerY);
+        transportTo(centerX, centerY, zoom);
     }
 
 	onMount(async () => {
@@ -161,6 +157,8 @@
         scale();
         setURLParams();
         console.log("zooming out " + zoom);
+        setViewBoxString();
+        if(needToReload()) getData();
     }
 
     function zoomIn(){
@@ -168,6 +166,13 @@
         console.log("zooming in " + zoom);
         scale();
         setURLParams();
+        setViewBoxString();
+        if(needToReload()) getData();
+    }
+
+    function setViewBoxString(){
+        let viewBoxString = `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`;
+        document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
     }
 
     function onKeyDown(event){
@@ -186,18 +191,9 @@
             case "arrowdown": 
                 viewBox.y += speed;
                 break;
-            case "-":
-                zoomOut();
-                break;
-            case "=":
-                zoomIn();
-                break;
         }
 
-        let viewBoxString = `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`;
-        console.log(viewBoxString)
-        document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
-
+        setViewBoxString();
         if(needToReload()) getData();
     }
 
@@ -252,6 +248,7 @@
 </script>
     
 <Search {transportTo} bind:selectedDocument={selectedDocument} bind:resultsVisible={resultsVisible}/>
+<ZoomControl {zoomIn} {zoomOut} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <BagButton handleClick={() => {displaySaved = !displaySaved}} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DocumentInfo {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
