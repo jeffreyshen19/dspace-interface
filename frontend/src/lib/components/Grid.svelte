@@ -27,6 +27,11 @@
     let viewBox;
     let newViewBox;
 
+    let zoom;
+    let zoomFactor = 0.9;
+    let minZoom = 0.25;
+    let maxZoom = 1.5;
+
     let moved = false;
 
     async function getData(){
@@ -50,14 +55,13 @@
         var url = new URL(window.location.href);
         url.searchParams.set('x', boundingBox[0][0] + (boundingBox[1][0] - boundingBox[0][0]) / 2);
         url.searchParams.set('y', boundingBox[0][1] + (boundingBox[1][1] - boundingBox[0][1]) / 2);
+        url.searchParams.set('z', zoom);
         window.history.replaceState(null, "", url.toString())
     }
 
-    function transportTo(x: number, y: number){
+    
+    function transportTo(x: number, y: number, z?: number){
         boundingBox = [[x - width / 2, y - height / 2], [x + width / 2, y + height / 2]];
-
-        let viewBoxString = `${boundingBox[0][0]} ${boundingBox[0][1]} ${width} ${height}`;
-        document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
 
         pointerOrigin = {
             x: boundingBox[0][0], 
@@ -65,12 +69,23 @@
         };
         viewBox = {
             x: boundingBox[0][0],
-            y: boundingBox[0][1]
+            y: boundingBox[0][1],
+            width: width,
+            height: height
         };
         newViewBox = {
             x: boundingBox[0][0],
             y: boundingBox[0][1]
         };
+
+        zoom = z || 1;
+        console.log(zoom);
+        scale();
+
+        let viewBoxString = `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`;
+        console.log(viewBoxString)
+        document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
+
 
         if(!loadedBox || needToReload()) getData();
 
@@ -89,8 +104,9 @@
 
         let centerX = parseFloat(urlParams.get("x")) || 0;
         let centerY = parseFloat(urlParams.get("y")) || 0;
+        zoom = Math.max(minZoom, Math.min(parseFloat(urlParams.get("z")) || 1, maxZoom));
         
-        transportTo(centerX, centerY);
+        transportTo(centerX, centerY, zoom);
 
         window.addEventListener('resize', onResize);
 		
@@ -122,6 +138,38 @@
         pointerOrigin.y = pointerPosition.y;
     }
 
+    function scale(){
+        let cx = viewBox.x + viewBox.width / 2;
+        let cy = viewBox.y + viewBox.height / 2;
+
+        let newWidth = width / zoom;
+        let newHeight = height / zoom;
+
+        viewBox.x = cx - newWidth / 2;
+        viewBox.y = cy - newHeight / 2;
+        viewBox.width = newWidth;
+        viewBox.height = newHeight; 
+
+        boundingBox[0][0] = viewBox.x;
+        boundingBox[0][1] = viewBox.y;
+        boundingBox[1][0] = (viewBox.width + viewBox.x);
+        boundingBox[1][1] = (viewBox.height + viewBox.y);
+    }
+
+    function zoomOut(){
+        zoom = Math.max(zoom * zoomFactor, minZoom);
+        scale();
+        setURLParams();
+        console.log("zooming out " + zoom);
+    }
+
+    function zoomIn(){
+        zoom = Math.min(zoom / zoomFactor, maxZoom);
+        console.log("zooming in " + zoom);
+        scale();
+        setURLParams();
+    }
+
     function onKeyDown(event){
         const speed = 20;
 
@@ -138,10 +186,19 @@
             case "arrowdown": 
                 viewBox.y += speed;
                 break;
+            case "-":
+                zoomOut();
+                break;
+            case "=":
+                zoomIn();
+                break;
         }
 
-        let viewBoxString = `${viewBox.x} ${viewBox.y} ${width} ${height}`;
+        let viewBoxString = `${viewBox.x} ${viewBox.y} ${viewBox.width} ${viewBox.height}`;
+        console.log(viewBoxString)
         document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
+
+        if(needToReload()) getData();
     }
 
     function onPointerMove (event) {
@@ -149,14 +206,14 @@
 
         let pointerPosition = getPointFromEvent(event);
 
-        newViewBox.x = viewBox.x - (pointerPosition.x - pointerOrigin.x);
-        newViewBox.y = viewBox.y - (pointerPosition.y - pointerOrigin.y);
+        newViewBox.x = viewBox.x - (pointerPosition.x - pointerOrigin.x) / zoom;
+        newViewBox.y = viewBox.y - (pointerPosition.y - pointerOrigin.y) / zoom;
 
         let dist = Math.pow(pointerPosition.x - pointerOrigin.x, 2) + Math.pow(pointerPosition.y - pointerOrigin.y, 2);
 
         if(dist > 10) moved = true;
 
-        let viewBoxString = `${newViewBox.x} ${newViewBox.y} ${width} ${height}`;
+        let viewBoxString = `${newViewBox.x} ${newViewBox.y} ${viewBox.width} ${viewBox.height}`;
         document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
     }
 
@@ -174,8 +231,8 @@
 
         boundingBox[0][0] = viewBox.x;
         boundingBox[0][1] = viewBox.y;
-        boundingBox[1][0] = (width + viewBox.x);
-        boundingBox[1][1] = (height + viewBox.y);
+        boundingBox[1][0] = (viewBox.width + viewBox.x);
+        boundingBox[1][1] = (viewBox.height + viewBox.y);
 
         // Update URL params 
         setURLParams();
