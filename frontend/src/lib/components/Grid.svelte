@@ -16,6 +16,7 @@
     let selectedDocument: Document = null;
     let documents: Document[] = [];
     let displaySaved = false;
+    let resultsVisible = false;
 
     let boundingBox;
     let loading;
@@ -188,11 +189,12 @@
     function handleDocumentClick(document){
         if(!moved) selectedDocument = (selectedDocument == document) ? null : document;
         moved = false;
+        resultsVisible = false;
     }
 
 </script>
     
-<Search/>
+<Search {transportTo} bind:selectedDocument={selectedDocument} bind:resultsVisible={resultsVisible}/>
 <BagButton handleClick={() => {displaySaved = !displaySaved}} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DocumentInfo {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
@@ -222,7 +224,7 @@
         on:touchstart={onPointerDown}
         on:touchend={onPointerUp}
         on:touchmove={onPointerMove}
-        on:click|self={() => {if(!moved) selectedDocument = null; moved = false; }}
+        on:click|self={() => {if(!moved) selectedDocument = null; moved = false; resultsVisible = false; }}
     >
         {#each documents as document}
             <foreignObject on:click={() => handleDocumentClick(document)} x="{document.x}" y="{document.y}" width="1" height="1">

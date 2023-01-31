@@ -5,6 +5,10 @@
 
     let query = ""; 
     let placeholder = "";
+    let results = [];
+    export let resultsVisible;
+    export let transportTo;
+    export let selectedDocument;
 
     async function getRandomTitle(){
         const {data, error} = await supabase.rpc('get_random_title');
@@ -12,45 +16,52 @@
     }
 
     async function search(){
-        console.log(query)
-        // const {data, error} = await supabase.rpc('search', { keyword: query })
+        const { data, error } = await supabase.from('documents')
+                                              .select()
+                                              .textSearch('fts', query, {type: "websearch", config: "english"})
+                                              .limit(20);
+        results = data;
+        resultsVisible = true;
+    }
 
-        // console.log(data);
-        // console.log(error);
+    function handleClick(document){
+        transportTo(document.x, document.y);
+        selectedDocument = document;
     }
 
     getRandomTitle();
-
-    // search("nuclear");
+    
 </script>
 
-<div id = "search">
+<div id = "search" class:results={resultsVisible}>
     <form on:submit|preventDefault={search}>
         <Fa id = "icon" icon={faMagnifyingGlass} />
         <input bind:value={query} {placeholder}>
     </form>
 </div>
 
-<style>
-    #search{
-        position: absolute;
-        top: 1.2rem;
-        left: 1.5rem;
-        width: min(400px, 100%);
-        background-color: white;
-        /* border: 4px solid #A3A0A9; */
-        border-radius: 5px;
-        box-sizing: border-box;
-        padding: 0.7rem 1.2rem;
-        color: #c6c5c8;
-        font-size: 1rem;
-        box-shadow: 0 4px 9px #A3A0A9;
-        z-index: 100;
-    } 
+{#if resultsVisible}
+    <div id = "results">
+        {#if results.length}
+            {#each results as result}
+                <div class = "result" on:click={() => handleClick(result)}>
+                    {result.title}
+                </div>
+            {/each}
+        {:else}
+            <div id = "no-results">No results found.</div> 
+        {/if}
+    </div>
+{/if}
 
-    #icon{
-        position: absolute;
-    }
+<style>
+    #search{       
+        top: 1.2rem;    
+        /* border: 4px solid #A3A0A9; */  
+        box-shadow: 0 4px 9px #A3A0A9;  
+        padding: 0.7rem 1.2rem;   
+        color: #c6c5c8;
+    } 
 
     input{
         width: 100%;
@@ -71,5 +82,55 @@
 
     input:focus{
         outline: none;
+    }
+
+    #search, #results{
+        position: absolute;
+        left: 1.5rem;
+        width: min(400px, 100%);
+        background-color: white;
+        border-radius: 5px;
+        z-index: 100;
+        box-sizing: border-box;
+        font-size: 1rem;   
+    }
+
+    #results{
+        top: 3.7rem;
+        border-top-left-radius: 0px;
+        border-top-right-radius: 0px;
+        box-shadow: 0 4px 9px -4px #A3A0A9;
+        border-top: 1px solid #ececee;
+        padding: 0.5rem 0;
+        max-height: 50vh;
+        overflow-y: scroll;
+    }
+
+    #no-results{
+        color: #c6c5c8;
+        padding: 0.2rem 1.2rem; 
+    }
+
+    .result{
+        padding: 0.4rem 1.2rem;  
+        font-size: 0.9rem;
+        color: #6d6c70;
+        overflow: hidden;
+        cursor: pointer;
+        transition: 0.2s all;
+    }
+
+    .result:hover{
+        background-color: #f6f6f6;
+    }
+
+    #search.results{
+        border-bottom-left-radius: 0px;
+        border-bottom-right-radius: 0px;
+        box-shadow: 0 4px 9px #A3A0A9;
+    }
+
+    #icon{
+        position: absolute;
     }
 </style>

@@ -28,7 +28,9 @@
 
     {#if selectedDocument}
         <h1>{selectedDocument.title}</h1>
-        <p class = "author">{selectedDocument.author}</p>
+        {#if selectedDocument.author}
+            <p class = "author">{selectedDocument.author}</p>
+        {/if}
         <br>
 
         <div id = "container">

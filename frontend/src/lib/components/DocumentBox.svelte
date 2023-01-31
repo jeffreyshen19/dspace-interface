@@ -9,7 +9,10 @@
 <div class = "document" data-filename="{document.filename}" 
     style:border-color="{getDocumentColor(document, 0.4)}">
     <h1>{document.title}</h1>
-    <p class = "author">{document.author}</p>
+    {#if document.author}
+        <p class = "author">{document.author}</p>
+    {/if}
+    
 
     {#if document.abstract}
         <p class = "text">{document.abstract}</p>
