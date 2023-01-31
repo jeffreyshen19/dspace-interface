@@ -2,12 +2,16 @@
     import {savedItems} from '../store.js';
     import Fa from 'svelte-fa';
     import { faStar } from '@fortawesome/free-solid-svg-icons';
+    import { supabase } from '../supabaseClient';
+    import {getDocumentColor} from "../colors.js";
 
     const min_x = -60000; const max_x = 60000;
     const min_y = -60000; const max_y = 60000;
 
     const width = 200;
     const height = 130;
+
+    let minimapData = [];
 
     export let boundingBox;
 
@@ -19,15 +23,40 @@
         return height / (max_y - min_y)
     }
 
+    async function getMinimapData(){
+        const {data, error} = await supabase.rpc('generate_minimap', {
+            "w": width,
+            "h": height,
+            "min_x": min_x,
+            "min_y": min_y,
+            "max_x": max_x,
+            "max_y": max_y,
+        });
+        minimapData = data;
+        console.log(data);
+    }
+
+    getMinimapData();
+
 </script>
 
 <div id = "minimap" style:width="{width}px" style:height="{height}px">
     {#if boundingBox}
         <svg>
+            {#each minimapData as point}
+                <rect
+                    width=1
+                    height=1
+                    x={point.minimap_x}
+                    y={point.minimap_y}
+                    fill={getDocumentColor(point, 0.4)}
+                ></rect>
+            {/each}
+
             {#each Object.keys($savedItems) as filename}
                 <foreignObject
-                    x={getScalingFactorX() * $savedItems[filename].x + width / 2 - 4}
-                    y={getScalingFactorY() * $savedItems[filename].y + height / 2 - 4}
+                    x={getScalingFactorX() * $savedItems[filename].x + width / 2 - 5}
+                    y={getScalingFactorY() * $savedItems[filename].y + height / 2 - 5}
                     width=5
                     height=5
                 >
@@ -36,10 +65,13 @@
             {/each}
 
             <rect
-                width={(boundingBox[1][0] - boundingBox[0][0]) * getScalingFactorX()}
-                height={(boundingBox[1][1] - boundingBox[0][1]) * getScalingFactorY()}
+                width={(boundingBox[1][0] - boundingBox[0][0]) * getScalingFactorX() + 4}
+                height={(boundingBox[1][1] - boundingBox[0][1]) * getScalingFactorY() + 4}
                 x={getScalingFactorX() * boundingBox[0][0] + width / 2}
                 y={getScalingFactorY() * boundingBox[0][1] + height / 2}
+                fill="none"
+                stroke="#cf000f"
+                stroke-width=1
             ></rect>
         </svg>
     {/if} 
@@ -70,7 +102,7 @@
     }
 
     foreignObject div{
-        font-size: 8px;
+        font-size: 10px;
         color: #f7ca18;
     }
 </style>
