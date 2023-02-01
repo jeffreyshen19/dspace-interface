@@ -8,6 +8,8 @@
     export let displaySaved: boolean;
     export let selectedDocument: Document;
     export let transportTo: (x:number, y:number) => void;
+    export let hoverOnDocument: (x:Document) => void;
+    export let hoverOffDocument: () => void;
     let relatedItems = [];
     
     function handleSave(document: Document){
@@ -32,6 +34,12 @@
 
     function getPDFUrl(document: Document){
         return "https://dspace.mit.edu/bitstream/handle/" + document.handle + "/" + document.filename.replace(".txt", "");
+    }
+
+    function clickRelatedItem(relatedItem){
+        selectedDocument = relatedItem; 
+        transportTo(selectedDocument.x, selectedDocument.y);
+        document.querySelector("#document-info").scrollTop = 0;
     }
 </script>
 
@@ -87,7 +95,13 @@
             <br><strong>Related Items</strong><br>
             <ul>
                 {#each relatedItems as relatedItem}
-                    <li class = "related-item" on:click={() => {selectedDocument = relatedItem;}}>
+                    <li class = "related-item" 
+                        on:mouseover={() => hoverOnDocument(relatedItem)} 
+                        on:mouseout={hoverOffDocument}
+                        on:focus={() => hoverOnDocument(relatedItem)} 
+                        on:blur={hoverOffDocument}  
+                        on:click={() => {clickRelatedItem(relatedItem)}}
+                    >
                         {relatedItem.title}
                     </li>
                 {/each}

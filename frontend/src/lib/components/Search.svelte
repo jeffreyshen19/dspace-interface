@@ -9,6 +9,8 @@
     export let resultsVisible;
     export let transportTo;
     export let selectedDocument;
+    export let hoverOnDocument;
+    export let hoverOffDocument;
 
     async function getRandomTitle(){
         const {data, error} = await supabase.rpc('get_random_title');
@@ -25,8 +27,10 @@
     }
 
     function handleClick(document){
+        hoverOffDocument();
         transportTo(document.x, document.y);
         selectedDocument = document;
+        resultsVisible = false;  
     }
 
     getRandomTitle();
@@ -44,7 +48,13 @@
     <div id = "results">
         {#if results.length}
             {#each results as result}
-                <div class = "result" on:click={() => handleClick(result)}>
+                <div class = "result" 
+                    on:mouseover={() => hoverOnDocument(result)} 
+                    on:mouseout={hoverOffDocument}
+                    on:focus={() => hoverOnDocument(result)} 
+                    on:blur={hoverOffDocument} 
+                    on:click={() => handleClick(result)}
+                >
                     {result.title}
                 </div>
             {/each}

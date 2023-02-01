@@ -12,12 +12,16 @@
     import { onMount, afterUpdate } from 'svelte';
     import Fa from 'svelte-fa';
     import { faCircleNotch, faY } from '@fortawesome/free-solid-svg-icons';
+    import DirectionIndicator from './DirectionIndicator.svelte';
 
     let width; let height;
     let selectedDocument: Document = null;
     let documents: Document[] = [];
     let displaySaved = false;
     let resultsVisible = false;
+    let showDirectionIndicator = false;
+    let directionIndicatorAngle = 0;
+    let directionIndicatorTitle;
 
     let boundingBox;
     let loading;
@@ -245,14 +249,30 @@
         resultsVisible = false;
     }
 
+    function hoverOnDocument(document){
+        // If document is outside bounding box, show direction indicator
+        if(document.x < boundingBox[0][0] || document.y < boundingBox[0][1] || document.x > boundingBox[1][0] || document.y > boundingBox[1][1]){
+            showDirectionIndicator = true;
+            let cx = viewBox.x + viewBox.width / 2;
+            let cy = viewBox.y + viewBox.height / 2;
+            directionIndicatorAngle = Math.atan2(document.x - cx, cy - document.y);
+            directionIndicatorTitle = document.title;
+        }
+    }
+
+    function hoverOffDocument(){
+        showDirectionIndicator = false;
+    }
+
 </script>
     
-<Search {transportTo} bind:selectedDocument={selectedDocument} bind:resultsVisible={resultsVisible}/>
+<Search {hoverOffDocument} {hoverOnDocument}  {transportTo} bind:selectedDocument={selectedDocument} bind:resultsVisible={resultsVisible}/>
 <ZoomControl {zoomIn} {zoomOut} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <BagButton handleClick={() => {displaySaved = !displaySaved}} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
-<DocumentInfo {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
+<DocumentInfo  {hoverOffDocument} {hoverOnDocument} {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
 <Minimap {boundingBox} {transportTo} {zoom}/>
+<DirectionIndicator  title={directionIndicatorTitle} angle={directionIndicatorAngle} {width} {height} {showDirectionIndicator}/>
 
 <svelte:window 
     bind:innerWidth={width} 
