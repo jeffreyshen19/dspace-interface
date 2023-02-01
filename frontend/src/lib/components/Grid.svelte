@@ -252,7 +252,7 @@
 <BagButton handleClick={() => {displaySaved = !displaySaved}} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DocumentInfo {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
-<Minimap {boundingBox}/>
+<Minimap {boundingBox} {transportTo} {zoom}/>
 
 <svelte:window 
     bind:innerWidth={width} 

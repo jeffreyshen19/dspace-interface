@@ -14,6 +14,8 @@
     let minimapData = [];
 
     export let boundingBox;
+    export let transportTo;
+    export let zoom;
 
     function getScalingFactorX(){
         return width / (max_x - min_x)
@@ -23,12 +25,22 @@
         return height / (max_y - min_y)
     }
 
+    function handleClick(e){
+        let rect = e.target.getBoundingClientRect();
+        let minimap_x = e.clientX - rect.left; 
+        let minimap_y = e.clientY - rect.top; 
+        
+        let x = minimap_x / getScalingFactorX() + min_x;
+        let y = minimap_y / getScalingFactorY() + min_y;
+        transportTo(x, y, zoom);
+    }
+
 </script>
 
-<div id = "minimap" style:width="{width}px" style:height="{height}px">
+<div id = "minimap" style:width="{width}px" style:height="{height}px" on:dblclick={handleClick}>
     {#if boundingBox}
         <svg>
-            {#each Object.keys($savedItems) as filename}
+            <!-- {#each Object.keys($savedItems) as filename}
                 <foreignObject
                     x={getScalingFactorX() * $savedItems[filename].x + width / 2 - 5}
                     y={getScalingFactorY() * $savedItems[filename].y + height / 2 - 5}
@@ -37,7 +49,7 @@
                 >
                     <div><Fa icon={faStar} /></div>   
                 </foreignObject>
-            {/each}
+            {/each} -->
 
             <rect
                 width={(boundingBox[1][0] - boundingBox[0][0]) * getScalingFactorX() + 4}
