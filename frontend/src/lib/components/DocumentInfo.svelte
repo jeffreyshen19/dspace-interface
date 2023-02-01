@@ -87,7 +87,7 @@
             <br><strong>Related Items</strong><br>
             <ul>
                 {#each relatedItems as relatedItem}
-                    <li class = "related-item" on:click={() => {selectedDocument = relatedItem}}>
+                    <li class = "related-item" on:click={() => {selectedDocument = relatedItem;}}>
                         {relatedItem.title}
                     </li>
                 {/each}

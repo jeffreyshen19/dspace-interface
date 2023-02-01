@@ -23,35 +23,11 @@
         return height / (max_y - min_y)
     }
 
-    async function getMinimapData(){
-        const {data, error} = await supabase.rpc('generate_minimap', {
-            "w": width,
-            "h": height,
-            "min_x": min_x,
-            "min_y": min_y,
-            "max_x": max_x,
-            "max_y": max_y,
-        });
-        minimapData = data;
-    }
-
-    getMinimapData();
-
 </script>
 
 <div id = "minimap" style:width="{width}px" style:height="{height}px">
     {#if boundingBox}
         <svg>
-            {#each minimapData as point}
-                <rect
-                    width=1
-                    height=1
-                    x={point.minimap_x}
-                    y={point.minimap_y}
-                    fill={getDocumentColor(point, 0.4)}
-                ></rect>
-            {/each}
-
             {#each Object.keys($savedItems) as filename}
                 <foreignObject
                     x={getScalingFactorX() * $savedItems[filename].x + width / 2 - 5}
@@ -89,6 +65,10 @@
         box-sizing: border-box;
         box-shadow: 0 2px 9px #A3A0A9;
         z-index: 100;
+        background-image: url("minimap.png");
+        background-size: 100%;
+        background-position: center center;
+        background-repeat: no-repeat;
     }
 
     svg{

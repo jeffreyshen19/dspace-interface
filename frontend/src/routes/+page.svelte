@@ -20,8 +20,11 @@
 
 <script>
 	import Grid from '../lib/components/Grid.svelte';
-    import GridGenerator from '../lib/components/GridGenerator.svelte';
+    // import GridGenerator from '../lib/components/GridGenerator.svelte';
+    // import MinimapGenerator from "../lib/components/MinimapGenerator.svelte";
 </script>
+
+<!-- <MinimapGenerator/> -->
 
 <Grid/>
 <!-- <GridGenerator/> -->
