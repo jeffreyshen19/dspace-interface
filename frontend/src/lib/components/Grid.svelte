@@ -13,6 +13,7 @@
     import Fa from 'svelte-fa';
     import { faCircleNotch, faY } from '@fortawesome/free-solid-svg-icons';
     import DirectionIndicator from './DirectionIndicator.svelte';
+    import { select } from 'd3';
 
     let width; let height;
     let selectedDocument: Document = null;
@@ -194,6 +195,12 @@
                 break;
             case "arrowdown": 
                 viewBox.y += speed;
+                break;
+            case "escape":
+                selectedDocument = null; 
+                displaySaved = false; 
+                resultsVisible = false; 
+                showDirectionIndicator = false;
                 break;
         }
 
