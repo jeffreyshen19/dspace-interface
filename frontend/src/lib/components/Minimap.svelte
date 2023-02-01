@@ -33,7 +33,6 @@
             "max_y": max_y,
         });
         minimapData = data;
-        console.log(data);
     }
 
     getMinimapData();

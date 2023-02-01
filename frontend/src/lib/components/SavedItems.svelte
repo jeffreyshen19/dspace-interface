@@ -71,7 +71,8 @@
 
     .document img{
         width: 70px;
-        height: auto;
+        align-self: center;
+        /* height: auto; */
     }
 
     .document .remove-item-container{

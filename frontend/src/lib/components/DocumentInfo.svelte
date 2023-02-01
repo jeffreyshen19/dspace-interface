@@ -3,10 +3,12 @@
     import { faXmark } from '@fortawesome/free-solid-svg-icons'
     import { savedItems } from '../store.js';
     import type { Document } from '../types/Document';
+    import {supabase} from '../supabaseClient';
 
     export let displaySaved: boolean;
     export let selectedDocument: Document;
     export let transportTo: (x:number, y:number) => void;
+    let relatedItems = [];
     
     function handleSave(document: Document){
         let temp = $savedItems;
@@ -14,6 +16,18 @@
         else temp[document.filename] = document;
 
         savedItems.set(temp);
+    }
+
+    async function getRelatedItems(){
+        const {data, error} = await supabase.rpc('get_related_documents', {
+            fname: selectedDocument.filename
+        });
+        relatedItems = data;
+    }
+
+    $: if(selectedDocument){
+        console.log("changed");
+        getRelatedItems();
     }
 
     function getPDFUrl(document: Document){
@@ -68,6 +82,18 @@
             <br><strong>Abstract</strong><br>
             <p>{selectedDocument.abstract}</p>
         {/if}
+
+        {#if relatedItems.length}
+            <br><strong>Related Items</strong><br>
+            <ul>
+                {#each relatedItems as relatedItem}
+                    <li class = "related-item" on:click={() => {selectedDocument = relatedItem}}>
+                        {relatedItem.title}
+                    </li>
+                {/each}
+            </ul>
+            
+        {/if}
     {/if}
 
 </div>
@@ -104,14 +130,6 @@
         right: 0.7rem;
         position: absolute;
         font-size: 1.2rem;
-        cursor: pointer;
-    }
-
-    .document{
-        width: 300px;
-        border: 15px solid rgba(40, 67, 135, 0.3);
-        padding: 10px;
-        box-sizing: border-box;
         cursor: pointer;
     }
 
@@ -182,5 +200,25 @@
     
     strong{
         margin-bottom: 0.5rem;
+    }
+
+    ul{
+        list-style-type: disc;
+        padding-left: 20px;
+    }
+    
+    .related-item{
+        padding: 0;
+        font-size: 0.9rem;
+        color: #6d6c70;
+        cursor: pointer;
+        transition: 0.2s all;
+        margin-bottom: 0.5rem;
+        display: list-item;
+        text-decoration: underline;
+    }
+
+    .related-item:hover{
+        color: #1e1e1f;
     }
 </style>
