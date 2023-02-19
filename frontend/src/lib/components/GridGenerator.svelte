@@ -24,15 +24,18 @@
             data.forEach((d) => {
                 documentPositions.push({
                     "filename": d.filename,
-                    "x": getX(d),
-                    "y": getY(d), 
+                    "x": d.x,
+                    "y": d.y, 
                     "width": d.width, 
                     "height": d.height
                 });
+
             })
 
             console.log(documentPositions.length);
         }  
+
+        console.log(documentPositions[0]);
     }
 
 	onMount(async () => {
@@ -45,8 +48,8 @@
         runSimulation();
 	});
 
-    async function doneTicking(){
-        console.log("done");
+    async function inserting(){
+        console.log("inserting");
         for(let i = 0; i < documentPositions.length; i++){
             console.log("uploading " + i);
             const { error } = await supabase
@@ -55,6 +58,14 @@
                 .eq('filename', documentPositions[i].filename);
         }
         console.log("done inserting")
+    }
+
+    function download(content, fileName, contentType) {
+        var a = document.createElement("a");
+        var file = new Blob([content], {type: contentType});
+        a.href = URL.createObjectURL(file);
+        a.download = fileName;
+        a.click();
     }
 
     function getX(document: Document){
@@ -68,10 +79,11 @@
     // Use d3 force simulation to position items 
     function runSimulation() {
         console.log("running simulation");
-        for (var i = 0; i < 300; ++i) {
-            console.log("tick");
+        for (var i = 0; i < 75; ++i) {
+            console.log("tick " + i);
             simulation.tick();
         }
+
 
         // var u = d3.select('#grid').select('svg')
         //     .selectAll('rect')
@@ -82,7 +94,8 @@
         //     .attr('x', d => d.x - d.width / 2)
         //     .attr('y', d => d.y - d.height / 2);
 
-        doneTicking();
+        // download(JSON.stringify(documentPositions), 'documentPositions.json', 'text/plain');
+        inserting();
     }
 
 </script>

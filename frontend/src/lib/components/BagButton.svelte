@@ -24,7 +24,7 @@
 
 <style>
     #bag-button{
-        position: absolute;
+        position: fixed;
         top: 1.2rem;
         right: 1.5rem;
         background-color: white;

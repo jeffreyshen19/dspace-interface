@@ -7,9 +7,10 @@
 
     export let displaySaved: boolean;
     export let selectedDocument: Document;
-    export let transportTo: (x:number, y:number) => void;
-    export let hoverOnDocument: (x:Document) => void;
-    export let hoverOffDocument: () => void;
+    export let transportTo: (x:number, y:number) => void = null;
+    export let hoverOnDocument: (x:Document) => void = null;
+    export let hoverOffDocument: () => void = null;
+    export let control: boolean;
     let relatedItems = [];
     
     function handleSave(document: Document){
@@ -28,7 +29,6 @@
     }
 
     $: if(selectedDocument){
-        console.log("changed");
         getRelatedItems();
     }
 
@@ -38,7 +38,7 @@
 
     function clickRelatedItem(relatedItem){
         selectedDocument = relatedItem; 
-        transportTo(selectedDocument.x, selectedDocument.y);
+        if(!control) transportTo(selectedDocument.x, selectedDocument.y);
         document.querySelector("#document-info").scrollTop = 0;
     }
 </script>
@@ -58,7 +58,9 @@
         <div id = "container">
             <div class = "img"><a href = "{getPDFUrl(selectedDocument)}" target = "_blank"><img src ="{selectedDocument.image_url}"></a></div>
             <div id = "buttons">
-                <a class = "button" target = "_blank" on:click={() => transportTo(selectedDocument.x, selectedDocument.y)}>View on Map</a>
+                {#if !control}
+                    <a class = "button" target = "_blank" on:click={() => transportTo(selectedDocument.x, selectedDocument.y)}>View on Map</a>
+                {/if} 
                 <a class = "button" target = "_blank" href = "{getPDFUrl(selectedDocument)}">Download</a>
                 <a class = "button" class:inverted="{selectedDocument.filename in $savedItems}" on:click={() => handleSave(selectedDocument)}>
                     {#if selectedDocument.filename in $savedItems}
@@ -95,15 +97,23 @@
             <br><strong>Related Items</strong><br>
             <ul>
                 {#each relatedItems as relatedItem}
-                    <li class = "related-item" 
-                        on:mouseover={() => hoverOnDocument(relatedItem)} 
-                        on:mouseout={hoverOffDocument}
-                        on:focus={() => hoverOnDocument(relatedItem)} 
-                        on:blur={hoverOffDocument}  
-                        on:click={() => {clickRelatedItem(relatedItem)}}
-                    >
-                        {relatedItem.title}
-                    </li>
+                    {#if control}
+                        <li class = "related-item" 
+                            on:click={() => {clickRelatedItem(relatedItem)}}
+                        >
+                            {relatedItem.title}
+                        </li>
+                    {:else}
+                        <li class = "related-item" 
+                            on:mouseover={() => hoverOnDocument(relatedItem)} 
+                            on:mouseout={hoverOffDocument}
+                            on:focus={() => hoverOnDocument(relatedItem)} 
+                            on:blur={hoverOffDocument}  
+                            on:click={() => {clickRelatedItem(relatedItem)}}
+                        >
+                            {relatedItem.title}
+                        </li>
+                    {/if}
                 {/each}
             </ul>
             
@@ -114,7 +124,7 @@
 
 <style>
     #document-info{
-        position: absolute;
+        position: fixed;
         width: 25vw;
         height: 100vh;
         top: 0;

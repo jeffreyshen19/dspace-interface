@@ -13,7 +13,6 @@
     import Fa from 'svelte-fa';
     import { faCircleNotch, faY } from '@fortawesome/free-solid-svg-icons';
     import DirectionIndicator from './DirectionIndicator.svelte';
-    import { select } from 'd3';
 
     let width; let height;
     let selectedDocument: Document = null;
@@ -276,7 +275,7 @@
 <Search {hoverOffDocument} {hoverOnDocument}  {transportTo} bind:selectedDocument={selectedDocument} bind:resultsVisible={resultsVisible}/>
 <ZoomControl {zoomIn} {zoomOut} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <BagButton handleClick={() => {displaySaved = !displaySaved}} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
-<DocumentInfo  {hoverOffDocument} {hoverOnDocument} {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
+<DocumentInfo control={false} {hoverOffDocument} {hoverOnDocument} {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
 <Minimap {boundingBox} {transportTo} {zoom}/>
 <DirectionIndicator  title={directionIndicatorTitle} angle={directionIndicatorAngle} {width} {height} {showDirectionIndicator}/>
