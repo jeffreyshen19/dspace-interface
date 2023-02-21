@@ -1,4 +1,5 @@
 <script>
+    import Likert from "../../../lib/components/Likert.svelte";
     let questions = [
         {
             "id": "FA-S.1",
@@ -48,53 +49,19 @@
             "id": "RW-S.3",
             "text": "I felt interested in this experience"
         }
-    ].sort((a, b) => 0.5 - Math.random());
-    let loaded = false;
-
-    setTimeout(function(){
-        loaded = true;
-
-    }, 200);
-
+    ];
 </script>
 
 
 <form>
     <p>The following statements ask you to reflect on your experience of engaging with this application. For each statement, please use the following scale to indicate what is most true for you.</p>
-    <table style:visibility="{loaded ? "visible" : "hidden"}">
-        <tr>
-            <th></th>
-            <th>Strongly Disagree</th>
-            <th>Disagree</th>
-            <th>Neither Agree nor Disagree</th>
-            <th>Agree</th>
-            <th>Strongly Agree</th>
-        </tr>
-        {#each questions as question}
-            <tr>
-                <td>{question.text}</td>
-                {#each Array(5) as _, j}
-                    <td><input type="radio" name="{question.id}" value="{j + 1}"></td>
-                {/each}
-            </tr>
-        {/each}
-    </table>
+    <Likert {questions}/>
 
     <br>
     <div style:text-align="center"><input type = "submit" value = "Finish experiment"></div>
 </form>
 
 <style>
-    
-    table{
-        width: 100%;
-    }
-
-    th, td{
-        padding: 0 1em 1em;
-        text-align: left;
-    }
-
     p{
         padding: 1em;
     }
