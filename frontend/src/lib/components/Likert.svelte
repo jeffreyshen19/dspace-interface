@@ -6,12 +6,12 @@
     $: loaded = false; 
     $: setTimeout(function(){
         loaded = true;
-    }, 200);
+    }, 100);
 
 
 </script>
 
-<table>
+<table style:visibility="{loaded ? "visible" : "hidden"}">
     <tr>
         <th></th>
         <th>Strongly Disagree</th>
