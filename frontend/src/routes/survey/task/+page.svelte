@@ -1,6 +1,6 @@
 <script>
     import Likert from "../../../lib/components/Likert.svelte";
-    import { sessionData, taskData } from "../../../lib/store";
+    import { savedItems, sessionData, taskData } from "../../../lib/store";
     import { supabase } from '../../../lib/supabaseClient';
     import {goto} from "$app/navigation";
 
@@ -29,12 +29,24 @@
         dataToInsert["is_goal_oriented"] = $taskData["is_goal_oriented"];
         dataToInsert["num_unique_items_displayed"] = $taskData["itemsDisplayed"].length;
         dataToInsert["num_unique_items_clicked"] = $taskData["itemsClicked"].length;
+        dataToInsert["num_saved_items"] = Object.keys($savedItems).length;
 
         // Send to database 
         const { data, error } = await supabase
                 .from('tasks')
                 .insert(dataToInsert)
-                .select();
+                .select()
+                .single();
+
+        let task_id = data["id"];
+        let respondent_id = $sessionData["id"]
+
+        // Insert saved items
+        Object.keys($savedItems).forEach(async (filename) => {
+            const { error } = await supabase
+                .from('saved_items')
+                .insert({ task_id, respondent_id, filename});
+        })
 
         // Redirect to task introduction or end 
         if($sessionData["current_task"] < 2){
