@@ -1,13 +1,23 @@
 
 <script lang="ts">
     import type { Document } from '../types/Document';
+    import { savedItems, taskData, sessionData } from '../store.js';
 
     export let document: Document;
     export let selectedDocument: Document;
 
     function handleClick(){
         selectedDocument = document;
+
+        // Update items clicked
+        let itemsClicked = $taskData["itemsClicked"];
+        if(itemsClicked.indexOf(document.filename) == -1) itemsClicked.push(document.filename);
+        let temp = $taskData;
+        temp["itemsClicked"] = itemsClicked;
+        taskData.set(temp);
     }
+
+    
 </script>
 
 <div class = "document">

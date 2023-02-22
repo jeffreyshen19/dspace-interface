@@ -9,6 +9,7 @@
     import { onMount, afterUpdate } from 'svelte';
     import Fa from 'svelte-fa';
     import { faCircleNotch, faY, faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
+    import { savedItems, taskData, sessionData } from '../store.js';
 
     let width; let height;
     let selectedDocument: Document = null;
@@ -48,6 +49,15 @@
         documents = data;
         totalCount = count;
         loading = false;
+
+        // Count unique items displayed
+        let itemsDisplayed = new Set($taskData["itemsDisplayed"]);
+        data.forEach((d) => {
+            itemsDisplayed.add(d.filename);
+        });
+        let temp = $taskData;
+        temp["itemsDisplayed"] = Array.from(itemsDisplayed);
+        taskData.set(temp);
     }
 
     async function search(){

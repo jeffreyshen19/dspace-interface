@@ -13,6 +13,7 @@
     import Fa from 'svelte-fa';
     import { faCircleNotch, faY } from '@fortawesome/free-solid-svg-icons';
     import DirectionIndicator from './DirectionIndicator.svelte';
+    import { savedItems, taskData, sessionData } from '../store.js';
 
     let width; let height;
     let selectedDocument: Document = null;
@@ -107,6 +108,7 @@
         zoom = Math.max(minZoom, Math.min(parseFloat(urlParams.get("z")) || 1, maxZoom));
         
         transportTo(centerX, centerY, zoom);
+        addDisplayedItems();
 
         window.addEventListener('resize', onResize);
 		
@@ -154,6 +156,8 @@
         boundingBox[0][1] = viewBox.y;
         boundingBox[1][0] = (viewBox.width + viewBox.x);
         boundingBox[1][1] = (viewBox.height + viewBox.y);
+
+        addDisplayedItems();
     }
 
     function zoomOut(){
@@ -180,21 +184,8 @@
     }
 
     function onKeyDown(event){
-        const speed = 20;
 
         switch(event.key.toLowerCase()){
-            case "arrowleft": 
-                viewBox.x -= speed;
-                break;
-            case "arrowright": 
-                viewBox.x += speed;
-                break;
-            case "arrowup": 
-                viewBox.y -= speed;
-                break;
-            case "arrowdown": 
-                viewBox.y += speed;
-                break;
             case "escape":
                 selectedDocument = null; 
                 displaySaved = false; 
@@ -203,8 +194,6 @@
                 break;
         }
 
-        setViewBoxString();
-        if(needToReload()) getData();
     }
 
     function onPointerMove (event) {
@@ -240,19 +229,36 @@
         boundingBox[1][0] = (viewBox.width + viewBox.x);
         boundingBox[1][1] = (viewBox.height + viewBox.y);
 
+        addDisplayedItems();
+
         // Update URL params 
         setURLParams();
 
         // Reload data, if necessary 
         if(needToReload()) getData();
-        
-        
     }
 
+    
     function handleDocumentClick(document){
         if(!moved) selectedDocument = (selectedDocument == document) ? null : document;
         moved = false;
         resultsVisible = false;
+
+        let itemsClicked = $taskData["itemsClicked"];
+        if(itemsClicked.indexOf(document.filename) == -1) itemsClicked.push(document.filename);
+        let temp = $taskData;
+        temp["itemsClicked"] = itemsClicked;
+        taskData.set(temp);
+    }
+
+    function addDisplayedItems(){
+        let itemsDisplayed = new Set($taskData["itemsDisplayed"]);
+        documents.forEach((d) => {
+            if(d.x >= boundingBox[0][0] && d.x <= boundingBox[1][0] && d.y >= boundingBox[0][1] && d.y <= boundingBox[1][1]) itemsDisplayed.add(d.filename);
+        });
+        let temp = $taskData;
+        temp["itemsDisplayed"] = Array.from(itemsDisplayed);
+        taskData.set(temp);
     }
 
     function hoverOnDocument(document){

@@ -1,30 +1,32 @@
 <script>
-    import { sessionData } from '../../../lib/store.js';
+    import { sessionData, savedItems } from '../../../lib/store.js';
     import { supabase } from '../../../lib/supabaseClient';
     import { goto } from '$app/navigation';
 
-    console.log($sessionData);
-
     // Redirect if the survey has already been filled out;
-    if("is_control" in $sessionData) goto('/training/', { "replaceState": true });
+    if("is_control" in $sessionData) goto('/task-introduction/', { "replaceState": true });
 
     async function submitEntranceSurvey(e){
         const formData = new FormData(e.target);
-        const data = Object.fromEntries(formData.entries());
-        data["is_control"] = Math.random() < 0.5; // Randomly assign to control or experimental
-        data["goal_task_first"] = Math.random() < 0.5; // Randomly assign order of goal task / non-goal gask
-        data["created_at"] = new Date().toISOString();
-
-        // Store locally 
-        sessionData.set(data);
+        const dataToInsert = Object.fromEntries(formData.entries());
+        dataToInsert["is_control"] = Math.random() < 0.5; // Randomly assign to control or experimental
+        dataToInsert["goal_task_first"] = Math.random() < 0.5; // Randomly assign order of goal task / non-goal gask
+        dataToInsert["created_at"] = new Date().toISOString();
 
         // Send to database 
-        const { error } = await supabase
+        const { data, error } = await supabase
                 .from('respondents')
-                .insert(data);
+                .insert(dataToInsert)
+                .select()
+                .single();
+
+        // Store locally 
+        dataToInsert["id"] = data["id"];
+        dataToInsert["current_task"] = 0; // 0: training, 1: first task, 2: last task
+        sessionData.set(dataToInsert);
 
         // Redirect to task introduction depending on control / experiment
-        goto('/training/', { "replaceState": true }) 
+        goto('/task-introduction/', { "replaceState": true }) 
     }
 
     let conductedLitReview;

@@ -1,8 +1,9 @@
 <script lang="ts">
     import Fa from 'svelte-fa'
     import { faXmark } from '@fortawesome/free-solid-svg-icons'
-    import { savedItems } from '../store.js';
+    import { savedItems, taskData, sessionData } from '../store.js';
     import type { Document } from '../types/Document';
+    import { goto } from '$app/navigation';
 
     export let displaySaved: boolean;
     export let selectedDocument: Document;
@@ -13,12 +14,28 @@
 
         savedItems.set(temp);
     }
+
+    function finishTask(){
+        // Save to localStorage
+        let temp = $taskData;
+        temp["end"] = Date.now();
+        taskData.set(temp);
+
+        // Redirect to correct interface
+        goto(`/survey/task`, { "replaceState": true });
+    }
 </script>
 
 <div id = "saved-items" class:selected="{displaySaved}" >
     <div class = "close" on:click={() => {displaySaved = false}}>
         <Fa icon={faXmark} />
     </div>
+
+    {#if "taskText" in $taskData}
+        <h1>Task Instructions</h1>
+        <p>{$taskData["taskText"]}</p>
+        <br>
+    {/if}
 
     <h1>Saved Documents</h1>
     <br>
@@ -41,11 +58,33 @@
     {#if !Object.keys($savedItems).length}
         <p>There are no saved items.</p>        
     {/if}
+
+    <a class = "button" target = "_blank" on:click={finishTask}>Finish Task</a>
 </div>
 
 <style>
+
+    .button{ 
+        display: block;
+        width: 100%;
+        border: 3px solid rgba(40, 67, 135, 0.3);
+        padding: 10px 15px;
+        box-sizing: border-box;
+        margin-bottom: 5px;
+        text-align: center;
+        cursor: pointer;
+        transition: 0.4s all;
+        color: black;
+        text-decoration: none;
+    }
+
+    .button:hover{
+        background-color: rgba(40, 67, 135, 0.5);
+        color: white;
+    }
+
     #saved-items{
-        position: absolute;
+        position: fixed;
         width: 25vw;
         height: 100vh;
         top: 0;

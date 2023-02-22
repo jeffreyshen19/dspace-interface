@@ -1,5 +1,9 @@
 <script>
     import Likert from "../../../lib/components/Likert.svelte";
+    import { sessionData, taskData } from "../../../lib/store";
+    import { supabase } from '../../../lib/supabaseClient';
+    import {goto} from "$app/navigation";
+
     let questions = [
         {
             "id": "found_interesting_items",
@@ -14,10 +18,40 @@
             "text": "I came across interesting items by chance"
         },
     ];
+
+   async function submitTask(e){
+        // TODO: deal with is_training
+
+        const formData = new FormData(e.target);
+        const dataToInsert = Object.fromEntries(formData.entries());
+        dataToInsert["respondent_id"] = $sessionData["id"];
+        dataToInsert["session_length"] = $taskData["end"] - $taskData["start"];
+        dataToInsert["is_goal_oriented"] = $taskData["is_goal_oriented"];
+        dataToInsert["num_unique_items_displayed"] = $taskData["itemsDisplayed"].length;
+        dataToInsert["num_unique_items_clicked"] = $taskData["itemsClicked"].length;
+
+        // Send to database 
+        const { data, error } = await supabase
+                .from('tasks')
+                .insert(dataToInsert)
+                .select();
+
+        // Redirect to task introduction or end 
+        if($sessionData["current_task"] < 2){
+            let temp = $sessionData; 
+            temp["current_task"]++;
+            sessionData.set(temp);
+            goto('/task-introduction/', { "replaceState": true });
+        }
+        else{
+            goto('/survey/exit/', { "replaceState": true });
+        }
+
+    }
 </script>
 
 
-<form>
+<form on:submit|preventDefault={submitTask}>
     <p>The following statements ask you to reflect on your experience of engaging with this task. For each statement, please use the following scale to indicate what is most true for you.</p>
     <Likert {questions}/>
 
