@@ -1,5 +1,9 @@
 <script>
     import Likert from "../../../lib/components/Likert.svelte";
+    import { sessionData, savedItems, taskData } from '../../../lib/store.js';
+    import { supabase } from '../../../lib/supabaseClient';
+    import { goto } from "$app/navigation";
+
     let questions = [
         {
             "id": "FA-S.1",
@@ -50,10 +54,28 @@
             "text": "I felt interested in this experience"
         }
     ];
+
+    async function submitExitSurvey(e){
+        const formData = new FormData(e.target);
+
+        // Send to database 
+        const { data, error } = await supabase
+                .from('respondents')
+                .update({"user_engagement": Object.fromEntries(formData.entries())})
+                .eq("id", $sessionData["id"])
+
+        // Reset data 
+        taskData.set({});
+        savedItems.set({});
+        sessionData.set({});
+
+        // Redirect to end
+        goto('/survey/end', { "replaceState": true }) 
+    }
 </script>
 
 
-<form>
+<form on:submit|preventDefault={submitExitSurvey}>
     <p>The following statements ask you to reflect on your experience of engaging with this application. For each statement, please use the following scale to indicate what is most true for you.</p>
     <Likert {questions}/>
 

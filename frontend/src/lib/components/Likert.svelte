@@ -24,7 +24,7 @@
         <tr>
             <td>{question.text}</td>
             {#each Array(5) as _, j}
-                <td><input type="radio" name="{question.id}" value="{j + 1}"></td>
+                <td><input required type="radio" name="{question.id}" value="{j + 1}"></td>
             {/each}
         </tr>
     {/each}
