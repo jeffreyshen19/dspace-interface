@@ -10,6 +10,7 @@
         selectedDocument = document;
 
         // Update items clicked
+        if(!("itemsClicked" in $taskData)) return;
         let itemsClicked = $taskData["itemsClicked"];
         if(itemsClicked.indexOf(document.filename) == -1) itemsClicked.push(document.filename);
         let temp = $taskData;

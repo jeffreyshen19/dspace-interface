@@ -51,6 +51,7 @@
         loading = false;
 
         // Count unique items displayed
+        if(!("itemsDisplayed" in $taskData)) return;
         let itemsDisplayed = new Set($taskData["itemsDisplayed"]);
         data.forEach((d) => {
             itemsDisplayed.add(d.filename);

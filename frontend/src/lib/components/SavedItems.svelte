@@ -59,7 +59,9 @@
         <p>There are no saved items.</p>        
     {/if}
 
-    <a class = "button" target = "_blank" on:click={finishTask}>Finish Task</a>
+    {#if "taskText" in $taskData}
+        <a class = "button" target = "_blank" on:click={finishTask}>Finish Task</a>
+    {/if}
 </div>
 
 <style>

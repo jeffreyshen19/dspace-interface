@@ -3,6 +3,7 @@
     import { savedItems, sessionData, taskData } from "../../../lib/store";
     import { supabase } from '../../../lib/supabaseClient';
     import {goto} from "$app/navigation";
+    import {browser} from "$app/environment";
 
     let questions = [
         {
@@ -19,9 +20,17 @@
         },
     ];
 
-   async function submitTask(e){
-        // TODO: deal with is_training
+    // Skip exit survey for training task
+    if(browser && $taskData["is_training"]) gotoNextTask();
 
+    function gotoNextTask(){
+        let temp = $sessionData; 
+        temp["current_task"]++;
+        sessionData.set(temp);
+        goto('/task-introduction/', { "replaceState": true });
+    }
+
+    async function submitTask(e){
         const formData = new FormData(e.target);
         const dataToInsert = Object.fromEntries(formData.entries());
         dataToInsert["respondent_id"] = $sessionData["id"];
@@ -50,10 +59,7 @@
 
         // Redirect to task introduction or end 
         if($sessionData["current_task"] < 2){
-            let temp = $sessionData; 
-            temp["current_task"]++;
-            sessionData.set(temp);
-            goto('/task-introduction/', { "replaceState": true });
+            gotoNextTask();
         }
         else{
             goto('/survey/exit/', { "replaceState": true });
@@ -66,8 +72,15 @@
 <form on:submit|preventDefault={submitTask}>
     <p>The following statements ask you to reflect on your experience of engaging with this task. For each statement, please use the following scale to indicate what is most true for you.</p>
     <Likert {questions}/>
-
     <br>
+
+    {#if $taskData["is_goal_oriented"]}
+        <label class = "label" for="year">On a scale of 1-10, how would you rate your level of expertise on "{$sessionData["goal_task_topic"]}"?</label>
+        <input type = "number" min="1" max = "10" name = "goal_task_topic_expertise" required/>
+        <br>
+        <br>
+    {/if}
+
     <div style:text-align="center"><input type = "submit" value = "Finish task & continue"></div>
 </form>
 

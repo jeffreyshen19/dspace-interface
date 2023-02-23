@@ -6,6 +6,33 @@
     //TODO: redirect if not yet filled out entrance survey
     if(browser && !("is_control" in $sessionData)) goto("/survey/entrance", {replaceState: true});
 
+    const taskTexts = {
+        "training": "Find an article about fuel cells and add it to your bag.",
+        "goal": `Imagine you have been asked to conduct a literature review on "${$sessionData["goal_task_topic"]}". Search for and add at least 5 documents you think are relevant and that you would be interested in reading more in-depth. Make sure to pick documents you would be interested in reading and that you think represent the topic well.`,
+        "non-goal": "Imagine you come across this website and decide to look around. Explore the interface for as long as you like until you are completely and utterly bored. When you find an item interesting, engaging, or relevant, add it to your saved items."
+    }
+
+    const tutorialLinkControl = "VjH09H6ywKA";
+    const tutorialLinkExperimental = "_S9yQcdLZ38";
+
+    // Get task text 
+    let {current_task, goal_task_first} = $sessionData;
+    let taskText; 
+    let is_training = false;
+    let is_goal_oriented;
+    if(current_task == 0) { // Training
+        taskText = taskTexts["training"];
+        is_training = true;
+    } 
+    else if((current_task == 1 && goal_task_first) || (current_task == 2 && !goal_task_first)) { // Goal Task
+        taskText = taskTexts["goal"];
+        is_goal_oriented = true;
+    }
+    else { // Non goal task
+        taskText = taskTexts["non-goal"];
+        is_goal_oriented = false;
+    }
+
     function startTask(){
         // Clear existing task data 
         savedItems.set({});
@@ -13,29 +40,6 @@
 
         // Start timer
         let start = Date.now();
-
-        // Get task text 
-        let {current_task, goal_task_first} = $sessionData;
-        let taskText; 
-        let is_training = false;
-        let is_goal_oriented;
-        if(current_task == 0) { // Training
-            taskText = "Select one item about fuel cells";
-            is_training = true;
-        } 
-        else if((current_task == 1 && goal_task_first) || (current_task == 2 && !goal_task_first)) { // Goal Task
-            taskText = `Imagine you are conducting a literature review. Please search for and add at least 5 documents to your saved items that you find relevant and interestings: 
-                        Select at least one paper related to “DEPLESYN: a three dimensional, discontinuous synthesis, diffusion-depletion code.”
-                        Select at least one paper about supply chain management
-                        Select at least one paper about venture capital markets in Europe
-                        Select at least one paper about lasers
-                        Select at least one paper published by the Department of Urban Studies and Planning`;
-            is_goal_oriented = true;
-        }
-        else { // Non goal task
-            taskText = "Imagine you come across this website and decide to look around. Explore the interface for as long as you like until you are completely and utterly bored. When you find an item interesting, engaging, or relevant, add it to your saved items.";
-            is_goal_oriented = false;
-        }
 
         // Save to localStorage
         taskData.set({
@@ -53,10 +57,30 @@
 </script>
 
 <form on:submit|preventDefault={startTask}>
-    <div style:text-align="center"><input type = "submit" value = "Start task"></div>
+    <h1>{current_task == 0 ? "Training Task" : "Task " + current_task} Instructions</h1>
+    {#if current_task == 0}
+        <iframe width="560" height="315" src="https://www.youtube.com/embed/{$sessionData["is_control"] ? tutorialLinkControl : tutorialLinkExperimental}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+        <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/{$sessionData["is_control" ? tutorialLinkControl : tutorialLinkExperimental]}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> -->
+        <p>Before you begin, you will first complete a quick training task to become familiar with the interface: </p>
+        <ul>
+            <li>First, watch the video which provides a tutorial of how to use the interface.</li>
+            <li><strong>Your task</strong>: {taskText}</li>
+            <li>Once you start the task, task instructions can be found by clicking on the bag button in the top right corner.</li>
+        </ul>
+    {:else if current_task == 1}
+        <p>Great work completing the training task! Your next task: <br><br>{taskText}</p>
+    {:else if current_task == 2}
+        <p>{taskText}</p>
+    {/if}
+    <br>
+    <input type = "submit" value = "Start task">
 </form>
 
 <style>
+    form{
+        padding: 2em 4em;
+    }
+
     input[type="submit"]{
         background: rgb(224, 224, 224);
         border: 1px solid gray;

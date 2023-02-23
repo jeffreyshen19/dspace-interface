@@ -79,7 +79,7 @@
     // Use d3 force simulation to position items 
     function runSimulation() {
         console.log("running simulation");
-        for (var i = 0; i < 100; ++i) {
+        for (var i = 0; i < 50; ++i) {
             console.log("tick " + i);
             simulation.tick();
         }

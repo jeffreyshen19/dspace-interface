@@ -244,6 +244,7 @@
         moved = false;
         resultsVisible = false;
 
+        if(!("itemsClicked" in $taskData)) return;
         let itemsClicked = $taskData["itemsClicked"];
         if(itemsClicked.indexOf(document.filename) == -1) itemsClicked.push(document.filename);
         let temp = $taskData;
@@ -252,6 +253,7 @@
     }
 
     function addDisplayedItems(){
+        if(!("itemsDisplayed" in $taskData)) return;
         let itemsDisplayed = new Set($taskData["itemsDisplayed"]);
         documents.forEach((d) => {
             if(d.x >= boundingBox[0][0] && d.x <= boundingBox[1][0] && d.y >= boundingBox[0][1] && d.y <= boundingBox[1][1]) itemsDisplayed.add(d.filename);
