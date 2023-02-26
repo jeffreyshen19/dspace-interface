@@ -1,4 +1,6 @@
-<a href = "/a">Experimental Interface</a><br>
-<a href = "/b">Control Interface</a><br>
-<a href = "/grid-generator">Grid Generator</a><br>
-<a href = "/minimap-generator">Minimap Generator</a><br>
+<script>
+    import { goto } from '$app/navigation';
+    import { browser } from '$app/environment';
+
+    if(browser) goto("/survey/entrance", {replaceState: true});
+</script>

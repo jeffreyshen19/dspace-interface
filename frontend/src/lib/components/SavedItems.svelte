@@ -16,13 +16,17 @@
     }
 
     function finishTask(){
-        // Save to localStorage
-        let temp = $taskData;
-        temp["end"] = Date.now();
-        taskData.set(temp);
 
-        // Redirect to correct interface
-        goto(`/survey/task`, { "replaceState": true });
+        if(Object.keys($savedItems).length < $taskData["minSavedItems"]) alert(`Please save at least ${$taskData["minSavedItems"]} items before finishing`); 
+        else{
+            // Save to localStorage
+            let temp = $taskData;
+            temp["end"] = Date.now();
+            taskData.set(temp);
+
+            // Redirect to correct interface
+            goto(`/survey/task`, { "replaceState": true });
+        }
     }
 </script>
 

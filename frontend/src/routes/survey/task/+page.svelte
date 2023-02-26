@@ -27,6 +27,11 @@
         let temp = $sessionData; 
         temp["current_task"]++;
         sessionData.set(temp);
+
+        // Erase previous task data 
+        savedItems.set({});
+        taskData.set({});
+
         goto('/task-introduction/', { "replaceState": true });
     }
 
@@ -47,22 +52,30 @@
                 .select()
                 .single();
 
-        let task_id = data["id"];
-        let respondent_id = $sessionData["id"]
-
-        // Insert saved items
-        Object.keys($savedItems).forEach(async (filename) => {
-            const { error } = await supabase
-                .from('saved_items')
-                .insert({ task_id, respondent_id, filename});
-        })
-
-        // Redirect to task introduction or end 
-        if($sessionData["current_task"] < 2){
-            gotoNextTask();
+        if(error){
+            alert("There was an error submitting. Please try again.");
         }
         else{
-            goto('/survey/exit/', { "replaceState": true });
+            let task_id = data["id"];
+            let respondent_id = $sessionData["id"]
+
+            // Insert saved items
+            Object.keys($savedItems).forEach(async (filename) => {
+                const { error } = await supabase
+                    .from('saved_items')
+                    .insert({ task_id, respondent_id, filename});
+            })
+
+            // Redirect to task introduction or end 
+            if($sessionData["current_task"] < 2){
+                gotoNextTask();
+            }
+            else{
+                // Erase previous task data 
+                savedItems.set({});
+                taskData.set({});
+                goto('/survey/exit/', { "replaceState": true });
+            }
         }
 
     }
@@ -75,7 +88,7 @@
     <br>
 
     {#if $taskData["is_goal_oriented"]}
-        <label class = "label" for="year">On a scale of 1-10, how would you rate your level of expertise on "{$sessionData["goal_task_topic"]}"?</label>
+        <label class = "label" for="year">On a scale of 1-10, with 1 being the least experienced and 10 being the most experienced, how would you rate your level of expertise on "{$sessionData["goal_task_topic"]}"?</label>
         <input type = "number" min="1" max = "10" name = "goal_task_topic_expertise" required/>
         <br>
         <br>

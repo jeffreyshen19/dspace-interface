@@ -64,13 +64,18 @@
                 .update({"user_engagement": Object.fromEntries(formData.entries())})
                 .eq("id", $sessionData["id"])
 
-        // Reset data 
-        taskData.set({});
-        savedItems.set({});
-        sessionData.set({});
+        if(error){
+            alert("There was an error submitting. Please try again.");
+        }
+        else{
+            // Reset data 
+            taskData.set({});
+            savedItems.set({});
+            sessionData.set({});
 
-        // Redirect to end
-        goto('/survey/end', { "replaceState": true }) 
+            // Redirect to end
+            goto('/survey/end', { "replaceState": true });
+        }
     }
 </script>
 

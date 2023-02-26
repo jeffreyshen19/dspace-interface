@@ -3,7 +3,7 @@
     import { goto } from '$app/navigation';
     import { browser } from '$app/environment';
 
-    //TODO: redirect if not yet filled out entrance survey
+    //Redirect if not yet filled out entrance survey
     if(browser && !("is_control" in $sessionData)) goto("/survey/entrance", {replaceState: true});
 
     const taskTexts = {
@@ -15,29 +15,29 @@
     const tutorialLinkControl = "VjH09H6ywKA";
     const tutorialLinkExperimental = "_S9yQcdLZ38";
 
-    // Get task text 
+    // Get task details 
     let {current_task, goal_task_first} = $sessionData;
     let taskText; 
     let is_training = false;
     let is_goal_oriented;
+    let minSavedItems; 
     if(current_task == 0) { // Training
         taskText = taskTexts["training"];
         is_training = true;
+        minSavedItems = 1;
     } 
     else if((current_task == 1 && goal_task_first) || (current_task == 2 && !goal_task_first)) { // Goal Task
         taskText = taskTexts["goal"];
         is_goal_oriented = true;
+        minSavedItems = 5;
     }
     else { // Non goal task
         taskText = taskTexts["non-goal"];
         is_goal_oriented = false;
+        minSavedItems = 0;
     }
 
     function startTask(){
-        // Clear existing task data 
-        savedItems.set({});
-        taskData.set({});
-
         // Start timer
         let start = Date.now();
 
@@ -49,6 +49,7 @@
             is_goal_oriented,
             itemsDisplayed: [],
             itemsClicked: [],
+            minSavedItems
         });
 
         // Redirect to correct interface

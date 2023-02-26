@@ -23,13 +23,18 @@
                 .select()
                 .single();
 
-        // Store locally 
-        dataToInsert["id"] = data["id"];
-        dataToInsert["current_task"] = 0; // 0: training, 1: first task, 2: last task
-        sessionData.set(dataToInsert);
+        if(error){
+            alert("There was an error submitting. Please try again.");
+        }
+        else{
+            // Store locally 
+            dataToInsert["id"] = data["id"];
+            dataToInsert["current_task"] = 0; // 0: training, 1: first task, 2: last task
+            sessionData.set(dataToInsert);
 
-        // Redirect to task introduction depending on control / experiment
-        goto('/task-introduction/', { "replaceState": true }) 
+            // Redirect to task introduction depending on control / experiment
+            goto('/task-introduction/', { "replaceState": true }) 
+        }
     }
 
     let conductedLitReview;
