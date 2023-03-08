@@ -26,6 +26,8 @@
                     "filename": d.filename,
                     "x": d.x,
                     "y": d.y, 
+                    // "x": getX(d),
+                    // "y": getY(d),
                     "width": d.width, 
                     "height": d.height
                 });
@@ -79,7 +81,7 @@
     // Use d3 force simulation to position items 
     function runSimulation() {
         console.log("running simulation");
-        for (var i = 0; i < 50; ++i) {
+        for (var i = 0; i < 200; ++i) {
             console.log("tick " + i);
             simulation.tick();
         }

@@ -3,8 +3,8 @@
     import {getDocumentColor} from "../colors.js";
     import {onMount } from 'svelte';
 
-    const min_x = -74000; const max_x = 74000;
-    const min_y = -74000; const max_y = 74000;
+    const min_x = -60000; const max_x = 60000;
+    const min_y = -60000; const max_y = 60000;
 
     const width = 200 * 2;
     const height = 130 * 2;
