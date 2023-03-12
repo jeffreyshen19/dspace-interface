@@ -1,4 +1,4 @@
-import adapter from '@sveltejs/adapter-auto';
+import adapter from '@sveltejs/adapter-vercel';
 import autoPreprocess from 'svelte-preprocess';
 
 /** @type {import('@sveltejs/kit').Config} */
