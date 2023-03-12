@@ -14,7 +14,7 @@
     let width; let height;
     let selectedDocument: Document = null;
     let documents: Document[] = [];
-    let displaySaved = false;
+    let displaySaved = true;
     let loading;
 
     const pageSize = 20;

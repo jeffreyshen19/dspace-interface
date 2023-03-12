@@ -77,7 +77,7 @@
         box-sizing: border-box;
         box-shadow: 0 2px 9px #A3A0A9;
         z-index: 100;
-        background-image: url("minimap.png");
+        background-image: url("/minimap.png");
         background-size: 100%;
         background-position: center center;
         background-repeat: no-repeat;

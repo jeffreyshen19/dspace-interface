@@ -62,12 +62,13 @@
     {#if current_task == 0}
         <iframe width="560" height="315" src="https://www.youtube.com/embed/{$sessionData["is_control"] ? tutorialLinkControl : tutorialLinkExperimental}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
         <!-- <iframe width="560" height="315" src="https://www.youtube.com/embed/{$sessionData["is_control" ? tutorialLinkControl : tutorialLinkExperimental]}" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe> -->
-        <p>Before you begin, you will first complete a quick training task to become familiar with the interface: </p>
+        <p>For this experiment, you will complete three short tasks. Your first task is a training task to become familiar with the interface: </p>
         <ul>
             <li>First, watch the video which provides a tutorial of how to use the interface.</li>
             <li><strong>Your task</strong>: {taskText}</li>
             <li>Once you start the task, task instructions can be found by clicking on the bag button in the top right corner.</li>
         </ul>
+        <p>Once you are done with each task, press the bag button in the top right corner then click "Finish Task".</p>
     {:else if current_task == 1}
         <p>Great work completing the training task! Your next task: <br><br>{taskText}</p>
     {:else if current_task == 2}

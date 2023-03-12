@@ -4,7 +4,7 @@
     import { supabase } from '../supabaseClient';
 
     let query = ""; 
-    let placeholder = "";
+    let placeholder = "Use double quotes to search for an exact phrase";
     let results = [];
     export let resultsVisible;
     export let transportTo;
@@ -33,7 +33,7 @@
         resultsVisible = false;  
     }
 
-    getRandomTitle();
+    // getRandomTitle();
     
 </script>
 
