@@ -44,6 +44,8 @@
 
     let moved = false;
 
+    
+
     async function getData(){
         let widthPadding = width;
         let heightPadding = height;
@@ -66,7 +68,7 @@
         url.searchParams.set('x', boundingBox[0][0] + (boundingBox[1][0] - boundingBox[0][0]) / 2);
         url.searchParams.set('y', boundingBox[0][1] + (boundingBox[1][1] - boundingBox[0][1]) / 2);
         url.searchParams.set('z', zoom);
-        window.history.replaceState(null, "", url.toString())
+        window.history.pushState(null, "", url.toString())
     }
 
     
@@ -314,6 +316,10 @@
         }
     }
 
+    function popState(){
+        window.location.reload();
+    }
+
 </script>
     
 <Search {hoverOffDocument} {hoverOnDocument}  {transportTo} bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument} bind:resultsVisible={resultsVisible}/>
@@ -329,6 +335,7 @@
     bind:innerWidth={width} 
     bind:innerHeight={height}
     on:keydown={onKeyDown}
+    on:popstate={popState}
 />
 
 {#if loading}

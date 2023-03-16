@@ -74,7 +74,7 @@
                 y={getScalingFactorY() * minimapBox.y + height / 2 - 2}
                 fill="rgba(80, 80, 80, 0.4)"
                 stroke="rgba(0,0,0,0)"
-                stroke-width=50
+                stroke-width=20
                 on:mousedown={onPointerDown}
                 on:mouseup|stopPropagation={onPointerUp}
                 on:mouseleave|stopPropagation={onPointerUp}
