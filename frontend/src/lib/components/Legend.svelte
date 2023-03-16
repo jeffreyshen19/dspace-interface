@@ -7,7 +7,8 @@
     let uniqueTopics = new Set();
     let topicNames = [];
     export let hovered = null;
-
+    export let transportTo;
+    
     async function getTopicNames(){
         let {data, error} = await supabase
             .from('topic_names')
@@ -37,21 +38,18 @@
     <div id = "legend">
         <!-- Labels for topics on screen -->
         {#each [...uniqueTopics] as topic}
-            <div class = "legend-item" on:mouseover={() => {hovered = topic}} on:mouseout={() => {hovered = null}}>
+            <div class = "legend-item" on:click={() => transportTo(topicNames[topic].cx, topicNames[topic].cy)} on:mouseover={() => {hovered = topic}} on:mouseout={() => {hovered = null}}>
                 <div class = "circle" style:background-color="{selectColor(topic, 0.4)}"></div>
                 {topicNames[topic].title}
             </div>
-            <br>
         {/each}
 
         <!-- All other documents should be dots -->
         {#each topicNames as topicTitle, i}
             {#if !uniqueTopics.has(topicTitle.topic)}
-                <div class = "legend-item" on:mouseover={() => {hovered = topicTitle.topic}} on:mouseout={() => {hovered = null}}>
+                <div class = "legend-item" on:click={() => transportTo(topicTitle.cx, topicTitle.cy)} on:mouseover={() => {hovered = topicTitle.topic}} on:mouseout={() => {hovered = null}}>
                     <div class = "circle" style:background-color="{selectColor(topicTitle.topic, 0.4)}"></div>
-                    {#if hovered == topicTitle.topic}
-                        <span transition:fly={{ duration: 200}}>{topicTitle.title}</span>
-                    {/if}
+                    <span style:opacity={hovered == topicTitle.topic ? "1" : "0.3"} transition:fly={{ duration: 200}}>{topicTitle.title}</span>
                 </div>
             {/if}
         {/each}
@@ -71,6 +69,14 @@
         z-index: 100;
         user-select: none;
         padding: 5px;
+        max-height: 120px;
+        /* overflow: scroll; */
+        overflow:hidden;
+        transition: max-height 0.4s;
+    }
+
+    #legend:hover{
+        max-height: 500px;
     }
 
     .circle{
@@ -82,9 +88,9 @@
     }
 
     .legend-item{
-        display: inline-block;
         font-size: 12px;
         padding: 5px;
         margin-bottom: -2px;
+        cursor: pointer;
     }
 </style>

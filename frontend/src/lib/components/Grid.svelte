@@ -303,7 +303,7 @@
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
 <Minimap {hovered} {boundingBox} {transportTo} {zoom} bind:expanded={expanded} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DirectionIndicator  title={directionIndicatorTitle} angle={directionIndicatorAngle} {width} {height} {showDirectionIndicator}/>
-<Legend bind:hovered={hovered} {documents} />
+<Legend {transportTo} bind:hovered={hovered} {documents} />
 
 <svelte:window 
     bind:innerWidth={width} 
