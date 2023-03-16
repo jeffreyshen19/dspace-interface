@@ -240,7 +240,10 @@
 
     
     function handleDocumentClick(document){
-        if(!moved) selectedDocument = (selectedDocument == document) ? null : document;
+        if(!moved) {
+            selectedDocument = (selectedDocument == document) ? null : document;
+            if(selectedDocument) displaySaved = false;
+        }
         moved = false;
         resultsVisible = false;
 
@@ -278,11 +281,21 @@
         showDirectionIndicator = false;
     }
 
+    function handleBagButtonClick(){
+        if(displaySaved){
+            displaySaved = false; 
+        }
+        else{
+            selectedDocument = null;
+            displaySaved = true;
+        }
+    }
+
 </script>
     
-<Search {hoverOffDocument} {hoverOnDocument}  {transportTo} bind:selectedDocument={selectedDocument} bind:resultsVisible={resultsVisible}/>
+<Search {hoverOffDocument} {hoverOnDocument}  {transportTo} bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument} bind:resultsVisible={resultsVisible}/>
 <ZoomControl {zoomIn} {zoomOut} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
-<BagButton handleClick={() => {displaySaved = !displaySaved}} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
+<BagButton handleClick={handleBagButtonClick} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DocumentInfo control={false} {hoverOffDocument} {hoverOnDocument} {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
 <Minimap {boundingBox} {transportTo} {zoom}/>

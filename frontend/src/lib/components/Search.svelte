@@ -11,6 +11,7 @@
     export let selectedDocument;
     export let hoverOnDocument;
     export let hoverOffDocument;
+    export let displaySaved;
 
     async function getRandomTitle(){
         const {data, error} = await supabase.rpc('get_random_title');
@@ -30,7 +31,8 @@
         hoverOffDocument();
         transportTo(document.x, document.y);
         selectedDocument = document;
-        resultsVisible = false;  
+        resultsVisible = false; 
+        displaySaved = false; 
     }
 
     // getRandomTitle();
