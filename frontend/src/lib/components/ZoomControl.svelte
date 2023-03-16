@@ -2,15 +2,28 @@
     import Fa from 'svelte-fa';
     import { faPlus, faMinus } from '@fortawesome/free-solid-svg-icons';
 
-    export let displaySaved: boolean;
-    export let displayDocumentInfo: boolean;
-
     export let zoomOut;
     export let zoomIn;
-    
+    export let expanded;
+    export let displaySaved: boolean;
+    export let displayDocumentInfo: boolean;
+    let right;
+
+    $: {
+        let right_vw = 0;
+        let right_px = 200;
+
+        if(displaySaved) right_vw += 25;
+        if(displayDocumentInfo) right_vw += 50; 
+        if(expanded) right_px += 200;
+
+        right = "calc(1.5rem + " + (right_px + 10) + "px + " + right_vw + "vw)"
+        console.log(right)
+    }
+
 </script>
 
-<div id = "zoom-control" class:two="{displaySaved && displayDocumentInfo}" class:one="{(displaySaved || displayDocumentInfo) && !(displaySaved && displayDocumentInfo)}" >
+<div id = "zoom-control" style:right={right} class:expanded="{expanded}">
     <div class = "icon" on:click={zoomIn}><Fa id = "icon" icon={faPlus} /></div>
     <div class = "icon" on:click={zoomOut}><Fa id = "icon" icon={faMinus} /></div>
 </div>
@@ -19,7 +32,6 @@
     #zoom-control{
         position: absolute;
         bottom: 1.2rem;
-        right: 1.5rem;
         background-color: white;
         border-radius: 5px;
         box-sizing: border-box;
@@ -31,6 +43,10 @@
         transition: 0.4s all;
         z-index: 100;
     } 
+
+    #zoom-control.expanded{
+        right: calc(1.5rem + 410px);
+    }
 
     .icon{
         padding: 0.6rem 0.8rem;
@@ -45,11 +61,4 @@
         background-color: #f6f6f6;
     }
 
-    #zoom-control.one{
-        right: calc(1.5rem + 25vw);
-    }
-
-    #zoom-control.two{
-        right: calc(1.5rem + 50vw);
-    }
 </style>

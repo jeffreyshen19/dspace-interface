@@ -3,6 +3,7 @@
     import type { Document } from '../types/Document';
     import { supabase } from '../supabaseClient';
     import DocumentBox from "./DocumentBox.svelte";
+    import Legend from "./Legend.svelte";
     import ZoomControl from './ZoomControl.svelte';
     import Search from "./Search.svelte";
     import Minimap from './Minimap.svelte';
@@ -23,6 +24,7 @@
     let showDirectionIndicator = false;
     let directionIndicatorAngle = 0;
     let directionIndicatorTitle;
+    let expanded = false;
 
     let boundingBox;
     let loading;
@@ -41,8 +43,8 @@
     let moved = false;
 
     async function getData(){
-        let widthPadding = 2 * width;
-        let heightPadding = 2 * height;
+        let widthPadding = width;
+        let heightPadding = height;
 
         loading = true;
         loadedBox = [[boundingBox[0][0] - widthPadding, boundingBox[0][1] - heightPadding], [ boundingBox[1][0] + widthPadding, boundingBox[1][1] + heightPadding]];
@@ -294,12 +296,13 @@
 </script>
     
 <Search {hoverOffDocument} {hoverOnDocument}  {transportTo} bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument} bind:resultsVisible={resultsVisible}/>
-<ZoomControl {zoomIn} {zoomOut} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
+<ZoomControl {zoomIn} {zoomOut} {expanded} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <BagButton handleClick={handleBagButtonClick} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DocumentInfo control={false} {hoverOffDocument} {hoverOnDocument} {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
-<Minimap {boundingBox} {transportTo} {zoom}/>
+<Minimap {boundingBox} {transportTo} {zoom} bind:expanded={expanded} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DirectionIndicator  title={directionIndicatorTitle} angle={directionIndicatorAngle} {width} {height} {showDirectionIndicator}/>
+<Legend {documents} />
 
 <svelte:window 
     bind:innerWidth={width} 

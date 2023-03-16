@@ -1,6 +1,6 @@
 const NUM_COLORS = 20;
 
-function selectColor(colorNum, opacity){
+export function selectColor(colorNum, opacity){
     return "hsl(" + (colorNum * (360 / NUM_COLORS) % 360) + ",50%,40%," + opacity + ")";
 }
 

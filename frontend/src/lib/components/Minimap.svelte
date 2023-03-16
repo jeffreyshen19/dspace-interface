@@ -10,13 +10,15 @@
 
     let width = 200;
     let height = 130;
-    let expanded = false;
 
     let minimapData = [];
 
     export let boundingBox;
     export let transportTo;
     export let zoom;
+    export let expanded;
+    export let displaySaved;
+    export let displayDocumentInfo;
 
     function getScalingFactorX(){
         return width / (max_x - min_x);
@@ -51,7 +53,7 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div id = "minimap" style:width="{width}px" style:height="{height}px" on:click={handleClick} on:mouseover={expand} on:mouseout={contract}>
+<div id = "minimap" style:width="{width}px" style:height="{height}px" on:click={handleClick} on:mouseover={expand} on:mouseout={contract} class:two="{displaySaved && displayDocumentInfo}" class:one="{(displaySaved || displayDocumentInfo) && !(displaySaved && displayDocumentInfo)}">
     {#if boundingBox}
         <svg>
             <rect
@@ -72,7 +74,7 @@
     #minimap{
         position: absolute;
         bottom: 1.2rem;
-        left: 1.5rem;
+        right: 1.5rem;
         background-color: white;
         /* border: 4px solid #A3A0A9; */
         border-radius: 5px;
@@ -83,9 +85,18 @@
         background-size: 100%;
         background-position: center center;
         background-repeat: no-repeat;
-        transition: 0.2s all;
+        transition: right 0.4s, width 0.4s, height 0.4s;
         cursor: pointer;
     }
+
+    #minimap.one{
+        right: calc(1.5rem + 25vw);
+    }
+
+    #minimap.two{
+        right: calc(1.5rem + 50vw);
+    }
+
 
     svg{
         width: 100%;
