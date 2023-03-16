@@ -1,11 +1,12 @@
 <script>
     import {selectColor} from "../colors.js";
     import { supabase } from '../supabaseClient';
+    import { fly } from 'svelte/transition';
 
     export let documents;
     let uniqueTopics = new Set();
     let topicNames = [];
-    let hovered = null;
+    export let hovered = null;
 
     async function getTopicNames(){
         let {data, error} = await supabase
@@ -36,7 +37,7 @@
     <div id = "legend">
         <!-- Labels for topics on screen -->
         {#each [...uniqueTopics] as topic}
-            <div class = "legend-item">
+            <div class = "legend-item" on:mouseover={() => {hovered = topic}} on:mouseout={() => {hovered = null}}>
                 <div class = "circle" style:background-color="{selectColor(topic, 0.4)}"></div>
                 {topicNames[topic].title}
             </div>
@@ -49,7 +50,7 @@
                 <div class = "legend-item" on:mouseover={() => {hovered = topicTitle.topic}} on:mouseout={() => {hovered = null}}>
                     <div class = "circle" style:background-color="{selectColor(topicTitle.topic, 0.4)}"></div>
                     {#if hovered == topicTitle.topic}
-                        {topicTitle.title}
+                        <span transition:fly={{ duration: 200}}>{topicTitle.title}</span>
                     {/if}
                 </div>
             {/if}
@@ -82,8 +83,8 @@
 
     .legend-item{
         display: inline-block;
-        margin-right: 5px;
         font-size: 12px;
-        line-height: 12px;
+        padding: 5px;
+        margin-bottom: -2px;
     }
 </style>

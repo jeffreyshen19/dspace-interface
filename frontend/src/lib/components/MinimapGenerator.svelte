@@ -51,12 +51,17 @@
 
     }
 
+    let topic;
+
     onMount(() => {
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+
+        topic = parseInt(urlParams.get("topic"));
+        console.log(topic);
         getMinimapData();
     });
-
     
-
 </script>
 
 <div id = "minimap" style:width="{width}px" style:height="{height}px">
@@ -67,7 +72,7 @@
                 height=1
                 x={point.x * getScalingFactorX() + width / 2}
                 y={point.y * getScalingFactorY() + height / 2}
-                fill={getDocumentColor(point, 0.4)}
+                fill={getDocumentColor(point, isNaN(topic) || topic == point.main_topic ? 0.6 : 0.1)}
             ></rect>
         {/each}
     </svg>

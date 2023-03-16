@@ -25,6 +25,7 @@
     let directionIndicatorAngle = 0;
     let directionIndicatorTitle;
     let expanded = false;
+    let hovered = null;
 
     let boundingBox;
     let loading;
@@ -300,9 +301,9 @@
 <BagButton handleClick={handleBagButtonClick} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DocumentInfo control={false} {hoverOffDocument} {hoverOnDocument} {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
-<Minimap {boundingBox} {transportTo} {zoom} bind:expanded={expanded} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
+<Minimap {hovered} {boundingBox} {transportTo} {zoom} bind:expanded={expanded} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DirectionIndicator  title={directionIndicatorTitle} angle={directionIndicatorAngle} {width} {height} {showDirectionIndicator}/>
-<Legend {documents} />
+<Legend bind:hovered={hovered} {documents} />
 
 <svelte:window 
     bind:innerWidth={width} 

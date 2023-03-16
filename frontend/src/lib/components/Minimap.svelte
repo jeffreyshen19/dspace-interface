@@ -19,6 +19,7 @@
     export let expanded;
     export let displaySaved;
     export let displayDocumentInfo;
+    export let hovered;
 
     function getScalingFactorX(){
         return width / (max_x - min_x);
@@ -53,7 +54,15 @@
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
-<div id = "minimap" style:width="{width}px" style:height="{height}px" on:click={handleClick} on:mouseover={expand} on:mouseout={contract} class:two="{displaySaved && displayDocumentInfo}" class:one="{(displaySaved || displayDocumentInfo) && !(displaySaved && displayDocumentInfo)}">
+<div id = "minimap" 
+     style:width="{width}px" 
+     style:height="{height}px" 
+     style:background-image="url('{hovered == null ? "minimap.png" : "minimaps/minimap-" + hovered + ".png"}')"
+     on:click={handleClick} 
+     on:mouseover={expand} 
+     on:mouseout={contract} 
+     class:two="{displaySaved && displayDocumentInfo}" 
+     class:one="{(displaySaved || displayDocumentInfo) && !(displaySaved && displayDocumentInfo)}">
     {#if boundingBox}
         <svg>
             <rect
@@ -81,11 +90,10 @@
         box-sizing: border-box;
         box-shadow: 0 2px 9px #A3A0A9;
         z-index: 100;
-        background-image: url("/minimap.png");
         background-size: 100%;
         background-position: center center;
         background-repeat: no-repeat;
-        transition: right 0.4s, width 0.4s, height 0.4s;
+        transition: right 0.4s, width 0.4s, height 0.4s, background-image 0.2s;
         cursor: pointer;
     }
 
@@ -103,12 +111,4 @@
         height: 100%;
     }
 
-    foreignObject{
-        overflow: visible;
-    }
-
-    foreignObject div{
-        font-size: 10px;
-        color: #f7ca18;
-    }
 </style>
