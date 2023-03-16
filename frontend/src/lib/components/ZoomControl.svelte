@@ -13,12 +13,11 @@
         let right_vw = 0;
         let right_px = 200;
 
-        if(displaySaved) right_vw += 25;
-        if(displayDocumentInfo) right_vw += 50; 
+        if(displaySaved && displayDocumentInfo) right_vw = 50;
+        if(displayDocumentInfo != displaySaved ) right_vw = 25; 
         if(expanded) right_px += 200;
 
         right = "calc(1.5rem + " + (right_px + 10) + "px + " + right_vw + "vw)"
-        console.log(right)
     }
 
 </script>

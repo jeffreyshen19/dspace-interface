@@ -35,6 +35,7 @@
     let pointerOrigin;
     let viewBox;
     let newViewBox;
+    let minimapBox;
 
     let zoom;
     let zoomFactor = 0.9;
@@ -85,6 +86,12 @@
         newViewBox = {
             x: boundingBox[0][0],
             y: boundingBox[0][1]
+        };
+        minimapBox = {
+            x: boundingBox[0][0],
+            y: boundingBox[0][1],
+            width: width,
+            height: height
         };
 
         zoom = z || 1;
@@ -160,6 +167,11 @@
         boundingBox[1][0] = (viewBox.width + viewBox.x);
         boundingBox[1][1] = (viewBox.height + viewBox.y);
 
+        minimapBox.x = viewBox.x;
+        minimapBox.y = viewBox.y;
+        minimapBox.width = viewBox.width;
+        minimapBox.height = viewBox.height;
+
         addDisplayedItems();
     }
 
@@ -199,19 +211,27 @@
 
     }
 
-    function onPointerMove (event) {
+    function onPointerMove (event, scalingX?, scalingY?) {
         if (!isPointerDown) return; 
+        if(!scalingX) scalingX = 1.0 / zoom;
+        if(!scalingY) scalingY = 1.0 / zoom;
 
         let pointerPosition = getPointFromEvent(event);
 
-        newViewBox.x = viewBox.x - (pointerPosition.x - pointerOrigin.x) / zoom;
-        newViewBox.y = viewBox.y - (pointerPosition.y - pointerOrigin.y) / zoom;
+        newViewBox.x = viewBox.x - scalingX * (pointerPosition.x - pointerOrigin.x);
+        newViewBox.y = viewBox.y - scalingY * (pointerPosition.y - pointerOrigin.y);
 
         let dist = Math.pow(pointerPosition.x - pointerOrigin.x, 2) + Math.pow(pointerPosition.y - pointerOrigin.y, 2);
 
         if(dist > 10) moved = true;
 
         let viewBoxString = `${newViewBox.x} ${newViewBox.y} ${viewBox.width} ${viewBox.height}`;
+        minimapBox = {
+            "x": newViewBox.x,
+            "y": newViewBox.y,
+            "width": viewBox.width, 
+            "height": viewBox.height,
+        };
         document.querySelector('#grid svg').setAttribute('viewBox', viewBoxString);
     }
 
@@ -301,7 +321,7 @@
 <BagButton handleClick={handleBagButtonClick} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DocumentInfo control={false} {hoverOffDocument} {hoverOnDocument} {transportTo} {displaySaved} bind:selectedDocument={selectedDocument}/>
 <SavedItems bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument}/>
-<Minimap {hovered} {boundingBox} {transportTo} {zoom} bind:expanded={expanded} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
+<Minimap {hovered} {onPointerUp} {onPointerDown} {onPointerMove} {minimapBox} {transportTo} {zoom} bind:expanded={expanded} {displaySaved} displayDocumentInfo={selectedDocument != null}/>
 <DirectionIndicator  title={directionIndicatorTitle} angle={directionIndicatorAngle} {width} {height} {showDirectionIndicator}/>
 <Legend {transportTo} bind:hovered={hovered} {documents} />
 

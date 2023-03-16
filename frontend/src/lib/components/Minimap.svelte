@@ -13,13 +13,16 @@
 
     let minimapData = [];
 
-    export let boundingBox;
+    export let minimapBox;
     export let transportTo;
     export let zoom;
     export let expanded;
     export let displaySaved;
     export let displayDocumentInfo;
     export let hovered;
+    export let onPointerUp;
+    export let onPointerMove;
+    export let onPointerDown;
 
     function getScalingFactorX(){
         return width / (max_x - min_x);
@@ -50,28 +53,35 @@
         height = 130;
         expanded = false;
     }
-
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->
+<!-- svelte-ignore a11y-mouse-events-have-key-events -->
 <div id = "minimap" 
      style:width="{width}px" 
      style:height="{height}px" 
      style:background-image="url('{hovered == null ? "minimap.png" : "minimaps/minimap-" + hovered + ".png"}')"
-     on:click={handleClick} 
      on:mouseover={expand} 
      on:mouseout={contract} 
      class:two="{displaySaved && displayDocumentInfo}" 
      class:one="{(displaySaved || displayDocumentInfo) && !(displaySaved && displayDocumentInfo)}">
-    {#if boundingBox}
-        <svg>
+    {#if minimapBox}
+        <svg on:click|self={handleClick} >
             <rect
-                width={(boundingBox[1][0] - boundingBox[0][0]) * getScalingFactorX() * (expanded ? 2 : 1) + 4}
-                height={(boundingBox[1][1] - boundingBox[0][1]) * getScalingFactorY() * (expanded ? 2 : 1) + 4}
-                x={getScalingFactorX() * boundingBox[0][0] + width / 2 - 2}
-                y={getScalingFactorY() * boundingBox[0][1] + height / 2 - 2}
+                width={minimapBox.width * getScalingFactorX() * (expanded ? 2 : 1) + 4}
+                height={minimapBox.height * getScalingFactorY() * (expanded ? 2 : 1) + 4}
+                x={getScalingFactorX() * minimapBox.x + width / 2 - 2}
+                y={getScalingFactorY() * minimapBox.y + height / 2 - 2}
                 fill="rgba(80, 80, 80, 0.4)"
-
+                stroke="rgba(0,0,0,0)"
+                stroke-width=50
+                on:mousedown={onPointerDown}
+                on:mouseup|stopPropagation={onPointerUp}
+                on:mouseleave|stopPropagation={onPointerUp}
+                on:mousemove={(e) => onPointerMove(e, -1 / getScalingFactorX(), -1 / getScalingFactorY())}
+                on:touchstart={onPointerDown}
+                on:touchend={onPointerUp}
+                on:touchmove={(e) => onPointerMove(e, -1 / getScalingFactorX(), -1 / getScalingFactorY())}
             ></rect>
         </svg>
     {/if} 
