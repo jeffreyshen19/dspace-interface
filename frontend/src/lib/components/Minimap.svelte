@@ -8,8 +8,9 @@
     const min_x = -60000; const max_x = 60000;
     const min_y = -60000; const max_y = 60000;
 
-    const width = 200;
-    const height = 130;
+    let width = 200;
+    let height = 130;
+    let expanded = false;
 
     let minimapData = [];
 
@@ -18,11 +19,11 @@
     export let zoom;
 
     function getScalingFactorX(){
-        return width / (max_x - min_x)
+        return width / (max_x - min_x);
     }
 
     function getScalingFactorY(){
-        return height / (max_y - min_y)
+        return height / (max_y - min_y);
     }
 
     function handleClick(e){
@@ -35,30 +36,31 @@
         transportTo(x, y, zoom);
     }
 
+    function expand(){
+        width = 400;
+        height = 260;
+        expanded = true;
+    }
+
+    function contract(){
+        width = 200;
+        height = 130;
+        expanded = false;
+    }
+
 </script>
 
-<div id = "minimap" style:width="{width}px" style:height="{height}px" on:dblclick={handleClick}>
+<!-- svelte-ignore a11y-click-events-have-key-events -->
+<div id = "minimap" style:width="{width}px" style:height="{height}px" on:click={handleClick} on:mouseover={expand} on:mouseout={contract}>
     {#if boundingBox}
         <svg>
-            <!-- {#each Object.keys($savedItems) as filename}
-                <foreignObject
-                    x={getScalingFactorX() * $savedItems[filename].x + width / 2 - 5}
-                    y={getScalingFactorY() * $savedItems[filename].y + height / 2 - 5}
-                    width=5
-                    height=5
-                >
-                    <div><Fa icon={faStar} /></div>   
-                </foreignObject>
-            {/each} -->
-
             <rect
-                width={(boundingBox[1][0] - boundingBox[0][0]) * getScalingFactorX() + 4}
-                height={(boundingBox[1][1] - boundingBox[0][1]) * getScalingFactorY() + 4}
-                x={getScalingFactorX() * boundingBox[0][0] + width / 2}
-                y={getScalingFactorY() * boundingBox[0][1] + height / 2}
-                fill="none"
-                stroke="#cf000f"
-                stroke-width=1
+                width={(boundingBox[1][0] - boundingBox[0][0]) * getScalingFactorX() * (expanded ? 2 : 1) + 4}
+                height={(boundingBox[1][1] - boundingBox[0][1]) * getScalingFactorY() * (expanded ? 2 : 1) + 4}
+                x={getScalingFactorX() * boundingBox[0][0] + width / 2 - 2}
+                y={getScalingFactorY() * boundingBox[0][1] + height / 2 - 2}
+                fill="rgba(80, 80, 80, 0.4)"
+
             ></rect>
         </svg>
     {/if} 
@@ -81,6 +83,8 @@
         background-size: 100%;
         background-position: center center;
         background-repeat: no-repeat;
+        transition: 0.2s all;
+        cursor: pointer;
     }
 
     svg{

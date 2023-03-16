@@ -6,8 +6,8 @@
     const min_x = -60000; const max_x = 60000;
     const min_y = -60000; const max_y = 60000;
 
-    const width = 200 * 2;
-    const height = 130 * 2;
+    const width = 200 * 4;
+    const height = 130 * 4;
 
     let minimapData = [];
 
