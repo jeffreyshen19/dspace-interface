@@ -111,7 +111,7 @@
         transportTo(centerX, centerY, zoom);
     }
 
-	onMount(async () => {
+    function init(){
         const queryString = window.location.search;
         const urlParams = new URLSearchParams(queryString);
 
@@ -121,6 +121,10 @@
         
         transportTo(centerX, centerY, zoom);
         addDisplayedItems();
+    }
+
+	onMount(async () => {
+        init();
 
         window.addEventListener('resize', onResize);
 		
@@ -316,10 +320,6 @@
         }
     }
 
-    function popState(){
-        window.location.reload();
-    }
-
 </script>
     
 <Search {hoverOffDocument} {hoverOnDocument}  {transportTo} bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument} bind:resultsVisible={resultsVisible}/>
@@ -335,7 +335,7 @@
     bind:innerWidth={width} 
     bind:innerHeight={height}
     on:keydown={onKeyDown}
-    on:popstate={popState}
+    on:popstate={init}
 />
 
 {#if loading}
