@@ -43,7 +43,8 @@
         dataToInsert["is_goal_oriented"] = $taskData["is_goal_oriented"];
         dataToInsert["num_unique_items_displayed"] = $taskData["itemsDisplayed"].length;
         dataToInsert["num_unique_items_clicked"] = $taskData["itemsClicked"].length;
-        dataToInsert["num_saved_items"] = Object.keys($savedItems).length;
+        dataToInsert["created_at"] = new Date().toISOString();
+        dataToInsert["saved_items"] = Object.keys($savedItems);
 
         // Send to database 
         const { data, error } = await supabase
@@ -55,27 +56,14 @@
         if(error){
             alert("There was an error submitting. Please try again.");
         }
+        else if($sessionData["current_task"] < 2){
+            gotoNextTask();
+        }
         else{
-            let task_id = data["id"];
-            let respondent_id = $sessionData["id"]
-
-            // Insert saved items
-            Object.keys($savedItems).forEach(async (filename) => {
-                const { error } = await supabase
-                    .from('saved_items')
-                    .insert({ task_id, respondent_id, filename});
-            })
-
-            // Redirect to task introduction or end 
-            if($sessionData["current_task"] < 2){
-                gotoNextTask();
-            }
-            else{
-                // Erase previous task data 
-                savedItems.set({});
-                taskData.set({});
-                goto('/survey/exit/', { "replaceState": true });
-            }
+            // Erase previous task data 
+            savedItems.set({});
+            taskData.set({});
+            goto('/survey/exit/', { "replaceState": true });
         }
 
     }
