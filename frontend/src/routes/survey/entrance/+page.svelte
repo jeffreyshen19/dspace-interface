@@ -16,6 +16,12 @@
         dataToInsert["goal_task_topic"] = goalTaskTopics[Math.floor(Math.random() * goalTaskTopics.length)];
         dataToInsert["created_at"] = new Date().toISOString();
 
+        const queryString = window.location.search;
+        const urlParams = new URLSearchParams(queryString);
+        dataToInsert["prolific_id"] = urlParams.get("PROLIFIC_PID");
+        dataToInsert["study_id"] = urlParams.get("STUDY_ID");
+        dataToInsert["session_id"] = urlParams.get("SESSION_ID");
+
         // Send to database 
         const { data, error } = await supabase
                 .from('respondents')
