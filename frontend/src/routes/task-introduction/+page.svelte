@@ -49,6 +49,7 @@
             is_goal_oriented,
             itemsDisplayed: [],
             itemsClicked: [],
+            searchQueries: [],
             minSavedItems
         });
 

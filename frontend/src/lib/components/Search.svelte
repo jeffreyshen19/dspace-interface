@@ -2,6 +2,7 @@
     import Fa from 'svelte-fa';
     import { faMagnifyingGlass } from '@fortawesome/free-solid-svg-icons';
     import { supabase } from '../supabaseClient';
+    import { taskData } from '../store.js';
 
     let query = ""; 
     let placeholder = "Use double quotes to search for an exact phrase";
@@ -19,12 +20,23 @@
     }
 
     async function search(){
+        storeSearchResult(query);
         const { data, error } = await supabase.from('documents')
                                               .select()
                                               .textSearch('fts', query, {type: "websearch", config: "english"})
                                               .limit(20);
         results = data;
         resultsVisible = true;
+    }
+
+    function storeSearchResult(query){
+        if(!("searchQueries" in $taskData)) return;
+        console.log(query);
+        let searchQueries = $taskData["searchQueries"];
+        searchQueries.push(query);
+        let temp = $taskData;
+        temp["searchQueries"] = searchQueries;
+        taskData.set(temp);
     }
 
     function handleClick(document){

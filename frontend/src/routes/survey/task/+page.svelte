@@ -45,6 +45,7 @@
         dataToInsert["num_unique_items_clicked"] = $taskData["itemsClicked"].length;
         dataToInsert["created_at"] = new Date().toISOString();
         dataToInsert["saved_items"] = Object.keys($savedItems);
+        dataToInsert["search_queries"] = $taskData["searchQueries"];
 
         // Send to database 
         const { data, error } = await supabase
