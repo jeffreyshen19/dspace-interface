@@ -74,7 +74,7 @@
             sessionData.set({});
 
             // Redirect to end
-            goto('/survey/end', { "replaceState": true });
+            goto('https://app.prolific.co/submissions/complete?cc=C1N0LTJF', { "replaceState": true });
         }
     }
 </script>
