@@ -46,6 +46,7 @@
         dataToInsert["created_at"] = new Date().toISOString();
         dataToInsert["saved_items"] = Object.keys($savedItems);
         dataToInsert["search_queries"] = $taskData["searchQueries"];
+        dataToInsert["location_history"] = $taskData["locationHistory"];
 
         // Send to database 
         const { data, error } = await supabase

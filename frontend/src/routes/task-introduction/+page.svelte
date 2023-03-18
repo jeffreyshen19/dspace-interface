@@ -50,6 +50,7 @@
             itemsDisplayed: [],
             itemsClicked: [],
             searchQueries: [],
+            locationHistory: [],
             minSavedItems
         });
 

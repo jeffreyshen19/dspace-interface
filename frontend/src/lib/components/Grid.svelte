@@ -71,8 +71,18 @@
         window.history.pushState(null, "", url.toString())
     }
 
+    function saveLocationHistory(x, y){
+        if(!("locationHistory" in $taskData)) return;
+        let locationHistory = $taskData["locationHistory"];
+        locationHistory.push({x: x, y: y, t: Date.now()});
+        let temp = $taskData;
+        temp["locationHistory"] = locationHistory;
+        taskData.set(temp);
+    }
+
     
     function transportTo(x: number, y: number, z?: number){
+        saveLocationHistory(x, y);
         boundingBox = [[x - width / 2, y - height / 2], [x + width / 2, y + height / 2]];
 
         pointerOrigin = {
@@ -262,6 +272,9 @@
 
         // Update URL params 
         setURLParams();
+
+        // Save location history
+        saveLocationHistory(boundingBox[0][0] + (boundingBox[1][0] - boundingBox[0][0]) / 2, boundingBox[0][1] + (boundingBox[1][1] - boundingBox[0][1]) / 2);
 
         // Reload data, if necessary 
         if(needToReload()) getData();
