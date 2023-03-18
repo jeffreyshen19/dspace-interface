@@ -41,8 +41,8 @@
         dataToInsert["respondent_id"] = $sessionData["id"];
         dataToInsert["session_length"] = $taskData["end"] - $taskData["start"];
         dataToInsert["is_goal_oriented"] = $taskData["is_goal_oriented"];
-        dataToInsert["num_unique_items_displayed"] = $taskData["itemsDisplayed"].length;
-        dataToInsert["num_unique_items_clicked"] = $taskData["itemsClicked"].length;
+        dataToInsert["unique_items_displayed"] = $taskData["itemsDisplayed"];
+        dataToInsert["unique_items_clicked"] = $taskData["itemsClicked"];
         dataToInsert["created_at"] = new Date().toISOString();
         dataToInsert["saved_items"] = Object.keys($savedItems);
         dataToInsert["search_queries"] = $taskData["searchQueries"];
