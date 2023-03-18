@@ -31,7 +31,6 @@
 
     function storeSearchResult(query){
         if(!("searchQueries" in $taskData)) return;
-        console.log(query);
         let searchQueries = $taskData["searchQueries"];
         searchQueries.push(query);
         let temp = $taskData;
