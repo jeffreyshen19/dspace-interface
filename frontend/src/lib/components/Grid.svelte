@@ -200,14 +200,12 @@
         zoom = Math.max(zoom * zoomFactor, minZoom);
         scale();
         setURLParams();
-        console.log("zooming out " + zoom);
         setViewBoxString();
         if(needToReload()) getData();
     }
 
     function zoomIn(){
         zoom = Math.min(zoom / zoomFactor, maxZoom);
-        console.log("zooming in " + zoom);
         scale();
         setURLParams();
         setViewBoxString();
@@ -238,7 +236,6 @@
         if(!scalingY) scalingY = 1.0 / zoom;
 
         let pointerPosition = getPointFromEvent(event);
-        // console.log(pointerPosition);
 
         newViewBox.x = viewBox.x - scalingX * (pointerPosition.x - pointerOrigin.x);
         newViewBox.y = viewBox.y - scalingY * (pointerPosition.y - pointerOrigin.y);
@@ -388,7 +385,7 @@
     </span>
 {/if}
 
-<div id = "grid" on:wheel={wheel}>
+<div id = "grid">
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <svg 
         on:mousedown={onPointerDown}
@@ -398,6 +395,7 @@
         on:touchstart={onPointerDown}
         on:touchend={onPointerUp}
         on:touchmove={onPointerMove}
+        on:wheel={wheel}
         on:click|self={() => {if(!moved) selectedDocument = null; moved = false; resultsVisible = false; }}
     >
         {#each documents as document}

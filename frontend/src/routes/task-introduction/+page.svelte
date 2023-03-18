@@ -13,7 +13,7 @@
     }
 
     const tutorialLinkControl = "VjH09H6ywKA";
-    const tutorialLinkExperimental = "_S9yQcdLZ38";
+    const tutorialLinkExperimental = "abApI_0F628";
 
     // Get task details 
     let {current_task, goal_task_first} = $sessionData;
