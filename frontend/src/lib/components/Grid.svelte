@@ -151,7 +151,12 @@
         if (event.targetTouches) {
             point.x = event.targetTouches[0].clientX;
             point.y = event.targetTouches[0].clientY;
-        } else {
+        }
+        else if(event.type == "wheel"){
+            point.x = event.clientX + wheeldelta.x;
+            point.y = event.clientY + wheeldelta.y;
+        }
+        else {
             point.x = event.clientX;
             point.y = event.clientY;
         }
@@ -233,6 +238,7 @@
         if(!scalingY) scalingY = 1.0 / zoom;
 
         let pointerPosition = getPointFromEvent(event);
+        // console.log(pointerPosition);
 
         newViewBox.x = viewBox.x - scalingX * (pointerPosition.x - pointerOrigin.x);
         newViewBox.y = viewBox.y - scalingY * (pointerPosition.y - pointerOrigin.y);
@@ -333,6 +339,29 @@
         }
     }
 
+    let wheeling;
+    var wheeldelta = {
+        x: 0,
+        y: 0
+    };
+
+    function wheel(e){
+        if(!wheeling) onPointerDown(e);
+
+        clearTimeout(wheeling);
+        wheeling = setTimeout(function() {
+            wheeling = undefined;
+            wheeldelta.x = 0;
+            wheeldelta.y = 0;
+            onPointerUp(e);
+        }, 50);
+
+        wheeldelta.x += e.deltaX;
+        wheeldelta.y += e.deltaY;
+
+        onPointerMove(e);
+    }
+
 </script>
     
 <Search {hoverOffDocument} {hoverOnDocument}  {transportTo} bind:displaySaved={displaySaved} bind:selectedDocument={selectedDocument} bind:resultsVisible={resultsVisible}/>
@@ -359,7 +388,7 @@
     </span>
 {/if}
 
-<div id = "grid" >
+<div id = "grid" on:wheel={wheel}>
     <!-- svelte-ignore a11y-click-events-have-key-events -->
     <svg 
         on:mousedown={onPointerDown}

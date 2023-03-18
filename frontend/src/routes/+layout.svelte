@@ -10,6 +10,8 @@
             padding: 0;
             margin: 0;
             overflow-x: hidden;
+            overscroll-behavior-x: none;
+            overscroll-behavior-y: none;
         }
     </style>
 </svelte:head>
