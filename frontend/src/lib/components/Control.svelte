@@ -50,13 +50,21 @@
         totalCount = count;
         loading = false;
 
+        // Store search queries
+        if(!("searchQueries" in $taskData)) return;
+        let searchQueries = $taskData["searchQueries"];
+        searchQueries.push(query);
+        let temp = $taskData;
+        temp["searchQueries"] = searchQueries;
+        taskData.set(temp);
+
         // Count unique items displayed
         if(!("itemsDisplayed" in $taskData)) return;
         let itemsDisplayed = new Set($taskData["itemsDisplayed"]);
         data.forEach((d) => {
             itemsDisplayed.add(d.filename);
         });
-        let temp = $taskData;
+        temp = $taskData;
         temp["itemsDisplayed"] = Array.from(itemsDisplayed);
         taskData.set(temp);
     }
