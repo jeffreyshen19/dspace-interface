@@ -53,6 +53,11 @@
         height = 130;
         expanded = false;
     }
+
+    $: {
+        if(expanded) expand();
+        else contract();
+    }
 </script>
 
 <!-- svelte-ignore a11y-click-events-have-key-events -->

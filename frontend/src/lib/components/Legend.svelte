@@ -8,6 +8,7 @@
     let topicNames = [];
     export let hovered = null;
     export let transportTo;
+    export let expanded;
     
     async function getTopicNames(){
         let {data, error} = await supabase
@@ -31,11 +32,23 @@
         uniqueTopics = getUniqueTopics();
     }
 
+    function expand(){
+        expanded = true;
+    }
+
+    function contract(){
+        expanded = false;
+    }
+
 
 </script>
 
 {#if topicNames.length}
-    <div id = "legend">
+    <div id = "legend"
+    on:mouseover={expand} 
+    on:mouseout={contract} 
+    class:expanded={expanded}
+    >
         <!-- Labels for topics on screen -->
         {#each [...uniqueTopics] as topic}
             <div class = "legend-item" on:click={() => transportTo(topicNames[topic].cx, topicNames[topic].cy)} on:mouseover={() => {hovered = topic}} on:mouseout={() => {hovered = null}}>
@@ -75,7 +88,7 @@
         transition: max-height 0.4s;
     }
 
-    #legend:hover{
+    #legend.expanded{
         max-height: 500px;
     }
 
