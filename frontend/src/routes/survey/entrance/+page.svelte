@@ -50,9 +50,18 @@
 </script>
 
 <form on:submit|preventDefault={submitEntranceSurvey}>
-    <p>Before you begin, please fill out the following demographic information. The purpose of this research is to test an interface for discovering research articles. Your participation is voluntary, and you may decline to answer any or all questions and may decline further participation, at any time, without adverse consequences. Responses are confidential and anonymized.  </p>
+    <p>This is an MIT research study. Before you begin, please fill out the following demographic information and consent form. 
+        
+    <ul>
+        <li>The purpose of this research is to test an interface for discovering research articles.</li>
+        <li>Your participation is voluntary.</li>
+        <li>You may decline to answer any or all questions and may decline further participation, at any time, without adverse consequences.</li>
+        <li>Responses are confidential and anonymized.</li>
+    </ul>
+
+    <p>Please contact Jeffrey (jjshen@mit.edu) with any questions or concerns.</p>
     
-    <label class = "label" for="consent"><strong>I consent to participate in this research study    </strong></label>
+    <label for="consent"><strong>I consent to participate in this research study    </strong></label>
     <input type="checkbox" name="consent" value="true" required>
     <br>
     
