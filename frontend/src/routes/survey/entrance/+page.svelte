@@ -22,7 +22,6 @@
         dataToInsert["study_id"] = urlParams.get("STUDY_ID");
         dataToInsert["session_id"] = urlParams.get("SESSION_ID");
 
-        if(!dataToInsert["year"].length) dataToInsert["year"] = null;
         dataToInsert["consent"] = (dataToInsert["consent"] == "true");
 
         // Send to database 
@@ -65,11 +64,14 @@
     <input type="checkbox" name="consent" value="true" required>
     <br>
     
-    <label class = "label" for="year">What year of graduate school are you in? (1-10)</label>
-    <input type = "number" min="1" max = "10" name = "year"/>
+    <label class = "label" for="highest_education">Which of these is the highest level of education you have completed?</label>
+    <input type = "radio" id="ms" name = "highest_education" value = "Graduate degree (MA/MSc/MPhil/other)"/>
+    <label for="ms">Graduate degree (MA/MSc/MPhil/other)</label>
+    <input type = "radio" id="phd" name = "highest_education" value = "Doctorate degree (PhD/other)"/>
+    <label for="phd">Doctorate degree (PhD/other)</label>
     <br>
 
-    <label class = "label" for="field">What field do you study? </label>
+    <label class = "label" for="field">What field do/did you study? </label>
     <input type = "text" name = "field"/>
     <br>
 
