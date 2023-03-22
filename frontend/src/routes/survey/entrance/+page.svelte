@@ -65,6 +65,8 @@
     <br>
     
     <label class = "label" for="highest_education">Which of these is the highest level of education you have completed?</label>
+    <input type = "radio" id="ms" name = "highest_education" value = "Currently in"/>
+    <label for="ms">Currently in graduate program (MA/MSc/MPhil/other)</label>
     <input type = "radio" id="ms" name = "highest_education" value = "Graduate degree (MA/MSc/MPhil/other)"/>
     <label for="ms">Graduate degree (MA/MSc/MPhil/other)</label>
     <input type = "radio" id="phd" name = "highest_education" value = "Doctorate degree (PhD/other)"/>
