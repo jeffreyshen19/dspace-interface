@@ -36,6 +36,13 @@
         let temp = $taskData;
         temp["searchQueries"] = searchQueries;
         taskData.set(temp);
+
+        if(!("itemsClicked" in $taskData)) return;
+        let itemsClicked = $taskData["itemsClicked"];
+        if(itemsClicked.indexOf(document.filename) == -1) itemsClicked.push(document.filename);
+        temp = $taskData;
+        temp["itemsClicked"] = itemsClicked;
+        taskData.set(temp);
     }
 
     function handleClick(document){
