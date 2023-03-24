@@ -26,7 +26,7 @@
     $: paginationOffset = Math.max(0, page - 1);
 
     let query = ""; 
-    let placeholder = "";
+    let placeholder = "Use double quotes to search for an exact phrase";
 
     async function getRandomTitle(){
         const {data, error} = await supabase.rpc('get_random_title');
@@ -89,7 +89,7 @@
 
         if(query.length) getData();
         
-        getRandomTitle();
+        // getRandomTitle();
 	});
 
     function onKeyDown(event){
