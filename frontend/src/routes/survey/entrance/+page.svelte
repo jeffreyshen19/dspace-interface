@@ -11,7 +11,7 @@
         const dataToInsert = Object.fromEntries(formData.entries());
         const goalTaskTopics = ["Supply chain management", "Venture capital markets in Europe", "Air traffic control"];
 
-        dataToInsert["is_control"] = Math.random() < 0.5; // Randomly assign to control or experimental
+        dataToInsert["is_control"] = Math.random() > 0.5; // Randomly assign to control or experimental
         dataToInsert["goal_task_first"] = Math.random() < 0.5; // Randomly assign order of goal task / non-goal gask
         dataToInsert["goal_task_topic"] = goalTaskTopics[Math.floor(Math.random() * goalTaskTopics.length)];
         dataToInsert["created_at"] = new Date().toISOString();
